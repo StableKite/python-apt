@@ -8,8 +8,6 @@
 # notice and this notice are preserved.
 """Unit tests for verifying the correctness of check_dep, etc in apt_pkg."""
 
-from __future__ import print_function
-
 import glob
 import logging
 import os
@@ -18,17 +16,16 @@ import sys
 import tempfile
 import unittest
 
-
 from test_all import get_library_dir
 
 libdir = get_library_dir()
 if libdir:
     sys.path.insert(0, libdir)
 
-import apt
 import apt_pkg
-
 import testcommon
+
+import apt
 
 
 def if_sources_list_is_readable(f):
@@ -46,7 +43,7 @@ def get_open_file_descriptors():
         fds = os.listdir("/proc/self/fd")
     except OSError:
         logging.warning("failed to list /proc/self/fd")
-        return set([])
+        return set()
     return set(map(int, fds))
 
 
@@ -339,7 +336,7 @@ class TestAptCache(testcommon.TestCase):
             p = c["a"]
             a_id = p.id
             p_hash = hash(p)
-            set_of_p = set([p])
+            set_of_p = {p}
             self.write_status_file("baz")
             apt_pkg.init_system()
             c.open()

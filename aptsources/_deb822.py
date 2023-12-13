@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) Canonical Ltd
 #
@@ -7,12 +6,11 @@
 
 """deb822 parser with support for comment headers and footers."""
 
-import io
 import collections
+import io
 import typing
 
 import apt_pkg
-
 
 T = typing.TypeVar("T")
 
@@ -23,7 +21,17 @@ class Section:
     This represents a single deb822 section.
     """
 
-    def __init__(self, section: str):
+    tags: collections.OrderedDict[str, str]
+    header: str
+    footer: str
+
+    def __init__(self, section: typing.Union[str, "Section"]):
+        if isinstance(section, Section):
+            self.tags = collections.OrderedDict(section.tags)
+            self.header = section.header
+            self.footer = section.footer
+            return
+
         comments = ["", ""]
         in_section = False
         trimmed_section = ""
@@ -57,16 +65,14 @@ class Section:
         return bool(self.tags)
 
     @typing.overload
-    def get(self, key: str) -> typing.Optional[str]:
+    def get(self, key: str) -> str | None:
         ...
 
     @typing.overload
-    def get(self, key: str, default: T) -> typing.Union[T, str]:
+    def get(self, key: str, default: T) -> T | str:
         ...
 
-    def get(
-        self, key: str, default: typing.Optional[T] = None
-    ) -> typing.Union[typing.Optional[T], str]:
+    def get(self, key: str, default: T | None = None) -> T | None | str:
         try:
             return self.tags[key]
         except KeyError:
@@ -95,14 +101,26 @@ class File:
     """
 
     def __init__(self, fobj: io.TextIOBase):
-        sections = fobj.read().split("\n\n")
-        self.sections = [Section(s) for s in sections]
+        self.sections = []
+        section = ""
+        for line in fobj:
+            if not line.isspace():
+                # A line is part of the section if it has non-whitespace characters
+                section += line
+            elif section:
+                # Our line is just whitespace and we have gathered section content, so let's write out the section
+                self.sections.append(Section(section))
+                section = ""
+
+        # The final section may not be terminated by an empty line
+        if section:
+            self.sections.append(Section(section))
 
     def __iter__(self) -> typing.Iterator[Section]:
         return iter(self.sections)
 
     def __str__(self) -> str:
-        return "\n\n".join(str(s) for s in self.sections)
+        return "\n".join(str(s) for s in self.sections)
 
 
 if __name__ == "__main__":
