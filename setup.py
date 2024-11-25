@@ -80,6 +80,7 @@ files = [
     "indexfile.cc",
     "metaindex.cc",
     "pkgmanager.cc",
+    "pkgmanagerprogress.cc",
     "pkgrecords.cc",
     "pkgsrcrecords.cc",
     "policy.cc",
@@ -100,7 +101,6 @@ apt_pkg = Extension(
     files,
     libraries=["apt-pkg"],
     extra_compile_args=[
-        "-std=c++11",
         "-Wno-write-strings",
         "-DAPT_8_CLEANER_HEADERS",
         "-DAPT_9_CLEANER_HEADERS",
@@ -120,7 +120,7 @@ apt_inst = Extension(
     "apt_inst",
     files,
     libraries=["apt-pkg"],
-    extra_compile_args=["-std=c++11", "-Wno-write-strings", "-DPY_SSIZE_T_CLEAN"],
+    extra_compile_args=["-Wno-write-strings", "-DPY_SSIZE_T_CLEAN"],
 )
 
 # Replace the leading _ that is used in the templates for translation
