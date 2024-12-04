@@ -43,7 +43,8 @@ class Distribution:
     ):
         """Container for distribution specific informations"""
         # OS information
-        self.id = id
+        # We have switched to lower-case ids from os-release, let's fix broken ones.
+        self.id = id.lower()
         self.codename = codename
         self.description = description
         self.release = release
@@ -539,12 +540,14 @@ def get_distro(
     If no paramter are given the distro will be auto detected
     """
     # make testing easier
+    # We have switched to lower-case ids from os-release, let's fix broken ones.
+    id = id.lower()
     if not (id and codename and description and release):
         os_release = platform.freedesktop_os_release()
         id = os_release["ID"]
         codename = os_release["VERSION_CODENAME"]
         description = os_release["PRETTY_NAME"]
-        release = os_release["VERSION_ID"]
+        release = os_release.get("VERSION_ID")
         is_like = os_release.get("ID_LIKE", [])
         # One can specify the derived codename like UBUNTU_VERSION_CODENAME to signal
         # that it is a subdistribution of it.
@@ -554,22 +557,22 @@ def get_distro(
             )
             if like_codename is not None:
                 like_codenames[like_id] = like_codename
-        if id == "Ubuntu":
+        if id == "ubuntu":
             channel = _system_image_channel()
             if channel is not None and "ubuntu-rtm/" in channel:
-                id = "Ubuntu-RTM"
+                id = "ubuntu-rtm"
                 codename = channel.rsplit("/", 1)[1].split("-", 1)[0]
                 description = codename
                 release = codename
-    if id == "Ubuntu":
+    if id == "ubuntu":
         return UbuntuDistribution(
             id, codename, description, release, is_like, like_codenames
         )
-    if id == "Ubuntu-RTM":
+    if id == "ubuntu-rtm":
         return UbuntuRTMDistribution(
             id, codename, description, release, is_like, like_codenames
         )
-    elif id == "Debian":
+    elif id == "debian":
         return DebianDistribution(
             id, codename, description, release, is_like, like_codenames
         )
