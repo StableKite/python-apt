@@ -1,3 +1,9 @@
+python-apt (3.1.0build1) resolute; urgency=medium
+
+  * No-change rebuild to drop Python 3.13 bits.
+
+ -- Matthias Klose <doko@ubuntu.com>  Fri, 20 Mar 2026 12:05:39 +0100
+
 python-apt (3.1.0) unstable; urgency=medium
 
   * test_all: Add handling for new library build dir name
