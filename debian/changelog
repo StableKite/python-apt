@@ -1,3 +1,9 @@
+python-apt (3.1.0ubuntu1) resolute; urgency=medium
+
+  * Refresh mirror lists (LP: #2148657)
+
+ -- Oliver Reiche <oliver.reiche@canonical.com>  Wed, 15 Apr 2026 11:45:55 +0200
+
 python-apt (3.1.0build1) resolute; urgency=medium
 
   * No-change rebuild to drop Python 3.13 bits.
