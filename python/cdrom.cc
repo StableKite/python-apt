@@ -80,8 +80,8 @@ static PyObject *cdrom_ident(PyObject *Self,PyObject *Args)
 
 
 static PyMethodDef cdrom_methods[] = {
-    {"add",cdrom_add,METH_VARARGS,cdrom_add_doc},
-    {"ident",cdrom_ident,METH_VARARGS,cdrom_ident_doc},
+    {"add",APT_NATIVE_CALL(cdrom_add),METH_VARARGS,cdrom_add_doc},
+    {"ident",APT_NATIVE_CALL(cdrom_ident),METH_VARARGS,cdrom_ident_doc},
     {}
 };
 
@@ -100,7 +100,7 @@ PyTypeObject PyCdrom_Type = {
     sizeof(CppPyObject<pkgCdrom>),       // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDealloc<pkgCdrom>,                // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<pkgCdrom>),                // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -112,7 +112,7 @@ PyTypeObject PyCdrom_Type = {
     0,                                   // tp_hash
     0,                                   // tp_call
     0,                                   // tp_str
-    _PyAptObject_getattro,               // tp_getattro
+    APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
     0,                                   // tp_setattro
     0,                                   // tp_as_buffer
     Py_TPFLAGS_DEFAULT |                 // tp_flags
@@ -134,6 +134,6 @@ PyTypeObject PyCdrom_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    cdrom_new,                           // tp_new
+    APT_NATIVE_CALL(cdrom_new),                           // tp_new
 };
 

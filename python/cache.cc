@@ -164,7 +164,7 @@ static PyObject *PkgCacheUpdate(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgCacheMethods[] =
 {
-   {"update",PkgCacheUpdate,METH_VARARGS,cache_update_doc},
+   {"update",APT_NATIVE_CALL(PkgCacheUpdate),METH_VARARGS,cache_update_doc},
    {}
 };
 
@@ -244,27 +244,27 @@ static PyObject *PkgCacheGetIsMultiArch(PyObject *Self, void*) {
 }
 
 static PyGetSetDef PkgCacheGetSet[] = {
-   {"depends_count",PkgCacheGetDependsCount,0,
+   {"depends_count",APT_NATIVE_CALL(PkgCacheGetDependsCount),0,
     "The number of apt_pkg.Dependency objects stored in the cache."},
-   {"file_list",PkgCacheGetFileList,0,
+   {"file_list",APT_NATIVE_CALL(PkgCacheGetFileList),0,
     "A list of apt_pkg.PackageFile objects stored in the cache."},
-   {"group_count",PkgCacheGetGroupCount,0,
+   {"group_count",APT_NATIVE_CALL(PkgCacheGetGroupCount),0,
     "The number of apt_pkg.Group objects stored in the cache."},
-   {"groups",  PkgCacheGetGroups, 0, "A list of Group objects in the cache"},
-   {"policy",  PkgCacheGetPolicy, 0, "The PkgPolicy for the cache"},
-   {"is_multi_arch", PkgCacheGetIsMultiArch, 0,
+   {"groups",  APT_NATIVE_CALL(PkgCacheGetGroups), 0, "A list of Group objects in the cache"},
+   {"policy",  APT_NATIVE_CALL(PkgCacheGetPolicy), 0, "The PkgPolicy for the cache"},
+   {"is_multi_arch", APT_NATIVE_CALL(PkgCacheGetIsMultiArch), 0,
     "Whether the cache supports multi-arch."},
-   {"package_count",PkgCacheGetPackageCount,0,
+   {"package_count",APT_NATIVE_CALL(PkgCacheGetPackageCount),0,
     "The number of apt_pkg.Package objects stored in the cache."},
-   {"package_file_count",PkgCacheGetPackageFileCount,0,
+   {"package_file_count",APT_NATIVE_CALL(PkgCacheGetPackageFileCount),0,
     "The number of apt_pkg.PackageFile objects stored in the cache."},
-   {"packages",PkgCacheGetPackages,0,
+   {"packages",APT_NATIVE_CALL(PkgCacheGetPackages),0,
     "A list of apt_pkg.Package objects stored in the cache."},
-   {"provides_count",PkgCacheGetProvidesCount,0,
+   {"provides_count",APT_NATIVE_CALL(PkgCacheGetProvidesCount),0,
     "Number of Provides relations described in the cache."},
-   {"ver_file_count",PkgCacheGetVerFileCount,0,
+   {"ver_file_count",APT_NATIVE_CALL(PkgCacheGetVerFileCount),0,
     "The number of (Version, PackageFile) relations."},
-   {"version_count",PkgCacheGetVersionCount,0,
+   {"version_count",APT_NATIVE_CALL(PkgCacheGetVersionCount),0,
     "The number of apt_pkg.Version objects stored in the cache."},
    {}
 };
@@ -392,8 +392,8 @@ static char *doc_PkgCache = "Cache([progress]) -> Cache() object.\n\n"
     "The cache can be used like a mapping from package names to Package\n"
     "objects (although only getting items is supported). Instead of a name,\n"
     "a tuple of a name and an architecture may be used.";
-static PySequenceMethods CacheSeq = {0,0,0,0,0,0,0,CacheContains,0,0};
-static PyMappingMethods CacheMap = {CacheMapLen,CacheMapOp,0};
+static PySequenceMethods CacheSeq = {0,0,0,0,0,0,0,APT_NATIVE_CALL(CacheContains),0,0};
+static PyMappingMethods CacheMap = {APT_NATIVE_CALL(CacheMapLen),APT_NATIVE_CALL(CacheMapOp),0};
 PyTypeObject PyCache_Type =
 {
    PyVarObject_HEAD_INIT(&PyType_Type, 0)
@@ -401,7 +401,7 @@ PyTypeObject PyCache_Type =
    sizeof(CppPyObject<pkgCache *>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgCache *>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgCache *>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -413,7 +413,7 @@ PyTypeObject PyCache_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -436,7 +436,7 @@ PyTypeObject PyCache_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgCacheNew,                         // tp_new
+   APT_NATIVE_CALL(PkgCacheNew),                         // tp_new
 };
 									/*}}}*/
 // PkgCacheFile Class							/*{{{*/
@@ -448,7 +448,7 @@ PyTypeObject PyCacheFile_Type =
    sizeof(CppPyObject<pkgCacheFile*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgCacheFile*>,       // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgCacheFile*>),       // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -485,10 +485,10 @@ static PyObject *PkgListItem(PyObject *iSelf,Py_ssize_t Index)
 
 static PySequenceMethods PkgListSeq =
 {
-   PkgListLen,
+   APT_NATIVE_CALL(PkgListLen),
    0,                // concat
    0,                // repeat
-   PkgListItem,
+   APT_NATIVE_CALL(PkgListItem),
    0,                // slice
    0,                // assign item
    0                 // assign slice
@@ -507,7 +507,7 @@ PyTypeObject PyPackageList_Type =
    sizeof(CppPyObject<PkgListStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<PkgListStruct>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<PkgListStruct>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -546,10 +546,10 @@ static PyObject *GrpListItem(PyObject *iSelf,Py_ssize_t Index)
 
 static PySequenceMethods GrpListSeq =
 {
-   GrpListLen,
+   APT_NATIVE_CALL(GrpListLen),
    0,                // concat
    0,                // repeat
-   GrpListItem,
+   APT_NATIVE_CALL(GrpListItem),
    0,                // slice
    0,                // assign item
    0                 // assign slice
@@ -568,7 +568,7 @@ PyTypeObject PyGroupList_Type =
    sizeof(CppPyObject<GrpListStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<GrpListStruct>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<GrpListStruct>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -675,48 +675,48 @@ static PyObject *PackageGetCurrentVer(PyObject *Self,void*)
 
 static PyMethodDef PackageMethods[] =
 {
-   {"get_fullname",(PyCFunction)PackageGetFullName,METH_VARARGS|METH_KEYWORDS,
+   {"get_fullname",(PyCFunction)APT_NATIVE_CALL(PackageGetFullName),METH_VARARGS|METH_KEYWORDS,
     PackageGetFullName_doc},
    {}
 };
 
 static PyGetSetDef PackageGetSet[] = {
-    {"name",PackageGetName,0,
+    {"name",APT_NATIVE_CALL(PackageGetName),0,
      "The name of the package."},
-    {"architecture",PackageGetArch,0, "The architecture of the package."},
-    {"rev_depends_list",PackageGetRevDependsList,0,
+    {"architecture",APT_NATIVE_CALL(PackageGetArch),0, "The architecture of the package."},
+    {"rev_depends_list",APT_NATIVE_CALL(PackageGetRevDependsList),0,
      "An apt_pkg.DependencyList object of all reverse dependencies."},
-    {"provides_list",PackageGetProvidesList,0,
+    {"provides_list",APT_NATIVE_CALL(PackageGetProvidesList),0,
      "A list of all packages providing this package. The list contains\n"
      "tuples in the format (providesname, providesver, version)\n"
      "where 'version' is an apt_pkg.Version object."},
-    {"selected_state",PackageGetSelectedState,0,
+    {"selected_state",APT_NATIVE_CALL(PackageGetSelectedState),0,
      "The state of the selection, which can be compared against the constants\n"
      "SELSTATE_DEINSTALL, SELSTATE_HOLD, SELSTATE_INSTALL, SELSTATE_PURGE,\n"
      "SELSTATE_UNKNOWN of the apt_pkg module."},
-    {"inst_state",PackageGetInstState,0,
+    {"inst_state",APT_NATIVE_CALL(PackageGetInstState),0,
      "The state of the install, which be compared against the constants\n"
      "INSTSTATE_HOLD, INSTSTATE_HOLD_REINSTREQ, INSTSTATE_OK,\n"
      "INSTSTATE_REINSTREQ of the apt_pkg module."},
-    {"current_state",PackageGetCurrentState,0,
+    {"current_state",APT_NATIVE_CALL(PackageGetCurrentState),0,
      "The current state, which can be compared against the constants\n"
      "CURSTATE_CONFIG_FILES, CURSTATE_HALF_CONFIGURED,\n"
      "CURSTATE_HALF_INSTALLED, CURSTATE_INSTALLED, CURSTATE_NOT_INSTALLED,\n"
      "CURSTATE_UNPACKED of the apt_pkg module."},
-    {"id",PackageGetID,0,
+    {"id",APT_NATIVE_CALL(PackageGetID),0,
      "The numeric ID of the package"},
-    {"essential",PackageGetEssential,0,
+    {"essential",APT_NATIVE_CALL(PackageGetEssential),0,
      "Boolean value determining whether the package is essential."},
-    {"important",PackageGetImportant,0,
+    {"important",APT_NATIVE_CALL(PackageGetImportant),0,
      "Boolean value determining whether the package has the 'important'\n"
      "flag set ('Important: yes' in the Packages file). No longer used."},
-    {"version_list",PackageGetVersionList,0,
+    {"version_list",APT_NATIVE_CALL(PackageGetVersionList),0,
      "A list of all apt_pkg.Version objects for this package, ordered highest to lowest."},
-    {"current_ver",PackageGetCurrentVer,0,
+    {"current_ver",APT_NATIVE_CALL(PackageGetCurrentVer),0,
      "The version of the package currently installed or None."},
-    {"has_versions",PackageGetHasVersions,0,
+    {"has_versions",APT_NATIVE_CALL(PackageGetHasVersions),0,
      "Whether the package has at least one version in the cache."},
-    {"has_provides",PackageGetHasProvides,0,
+    {"has_provides",APT_NATIVE_CALL(PackageGetHasProvides),0,
      "Whether the package is provided by at least one other package."},
     {}
 };
@@ -741,19 +741,19 @@ PyTypeObject PyPackage_Type =
    sizeof(CppPyObject<pkgCache::PkgIterator>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgCache::PkgIterator>,  // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgCache::PkgIterator>),  // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
    0,                                   // tp_compare
-   PackageRepr,                         // tp_repr
+   APT_NATIVE_CALL(PackageRepr),                         // tp_repr
    0,                                   // tp_as_number
    0,                                   // tp_as_sequence
    0,			                // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, // tp_flags
@@ -801,12 +801,12 @@ static PyObject *DescriptionGetFileList(PyObject *Self,void*)
 }
 
 static PyGetSetDef DescriptionGetSet[] = {
-    {"language_code",DescriptionGetLanguageCode,0,
+    {"language_code",APT_NATIVE_CALL(DescriptionGetLanguageCode),0,
      "The language code of the description. Empty string for untranslated\n"
      "descriptions."},
-    {"md5",DescriptionGetMd5,0,
+    {"md5",APT_NATIVE_CALL(DescriptionGetMd5),0,
      "The MD5 hash of the description."},
-    {"file_list",DescriptionGetFileList,0,
+    {"file_list",APT_NATIVE_CALL(DescriptionGetFileList),0,
      "A list of all apt_pkg.PackageFile objects related to this description."},
     {}
 };
@@ -830,19 +830,19 @@ PyTypeObject PyDescription_Type =
    sizeof(CppPyObject<pkgCache::DescIterator>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgCache::DescIterator>,          // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgCache::DescIterator>),          // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
    0,                                   // tp_compare
-   DescriptionRepr,                         // tp_repr
+   APT_NATIVE_CALL(DescriptionRepr),                         // tp_repr
    0,                                   // tp_as_number
    0,		                        // tp_as_sequence
    0,			                // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, // tp_flags
@@ -1065,53 +1065,53 @@ static PyObject *version_richcompare(PyObject *obj1, PyObject *obj2, int op)
 }
 
 static PyGetSetDef VersionGetSet[] = {
-   {"arch",VersionGetArch,0,
+   {"arch",APT_NATIVE_CALL(VersionGetArch),0,
     "The architecture of this specific version of the package."},
-   {"depends_list",VersionGetDependsList,0,
+   {"depends_list",APT_NATIVE_CALL(VersionGetDependsList),0,
     "A dictionary mapping dependency types to lists (A) of lists (B) of\n"
     "apt_pkg.Dependency objects. The lists (B) represent or dependencies\n"
     "like 'a || b'."},
-   {"depends_list_str",VersionGetDependsListStr,0,
+   {"depends_list_str",APT_NATIVE_CALL(VersionGetDependsListStr),0,
     "Same as depends_list, except that the apt_pkg.Dependency objects\n"
     "are 3-tuples of the form (name, version, operator); where operator\n"
     "is one of '<', '<=', '=', '>=', '>'."},
-   {"downloadable",VersionGetDownloadable,0,
+   {"downloadable",APT_NATIVE_CALL(VersionGetDownloadable),0,
     "Whether the version can be downloaded."},
-   {"file_list",VersionGetFileList,0,
+   {"file_list",APT_NATIVE_CALL(VersionGetFileList),0,
     "A list of tuples (packagefile: apt_pkg.PackageFile, index: int) for the\n"
     "PackageFile objects related to this package. The index can be used\n"
     "to retrieve the record of this package version."},
-   {"hash",VersionGetHash,0,
+   {"hash",APT_NATIVE_CALL(VersionGetHash),0,
     "The numeric hash of the version used in the internal storage."},
-   {"id",VersionGetID,0,
+   {"id",APT_NATIVE_CALL(VersionGetID),0,
     "The numeric ID of the package."},
-   {"installed_size",VersionGetInstalledSize,0,
+   {"installed_size",APT_NATIVE_CALL(VersionGetInstalledSize),0,
     "The installed size of this package version."},
-   {"multi_arch",VersionGetMultiArch,0,
+   {"multi_arch",APT_NATIVE_CALL(VersionGetMultiArch),0,
     "Multi-arch state of this package, as an integer. See\n"
     "the various MULTI_ARCH_* members."},
-   {"parent_pkg",VersionGetParentPkg,0,
+   {"parent_pkg",APT_NATIVE_CALL(VersionGetParentPkg),0,
     "The parent package of this version."},
-   {"priority",VersionGetPriority,0,
+   {"priority",APT_NATIVE_CALL(VersionGetPriority),0,
     "The priority of the package as an integer, which can be compared to\n"
     "the constants PRI_EXTRA, PRI_IMPORTANT, PRI_OPTIONAL, PRI_REQUIRED,\n"
     "PRI_STANDARD of the apt_pkg module."},
-   {"priority_str",VersionGetPriorityStr,0,
+   {"priority_str",APT_NATIVE_CALL(VersionGetPriorityStr),0,
     "The priority of the package, as a string."},
-   {"provides_list",VersionGetProvidesList,0,
+   {"provides_list",APT_NATIVE_CALL(VersionGetProvidesList),0,
     "A list of all packages provided by this version. The list contains\n"
     "tuples in the format (providesname, providesver, version)\n"
     "where 'version' is an apt_pkg.Version object."},
-   {"section",VersionGetSection,0,
+   {"section",APT_NATIVE_CALL(VersionGetSection),0,
     "The section of this package version."},
-   {"size",VersionGetSize,0,
+   {"size",APT_NATIVE_CALL(VersionGetSize),0,
     "The size of the package file."},
-   {"translated_description",VersionGetTranslatedDescription,0,
+   {"translated_description",APT_NATIVE_CALL(VersionGetTranslatedDescription),0,
     "An apt_pkg.Description object for the translated description if\n"
     "available or the untranslated fallback."},
-   {"is_security_update",VersionGetIsSecurityUpdate,0,
+   {"is_security_update",APT_NATIVE_CALL(VersionGetIsSecurityUpdate),0,
     "Whether this version is a security update."},
-   {"ver_str",VersionGetVerStr,0,
+   {"ver_str",APT_NATIVE_CALL(VersionGetVerStr),0,
     "The version string."},
    {}
 };
@@ -1123,26 +1123,26 @@ PyTypeObject PyVersion_Type =
    sizeof(CppPyObject<pkgCache::VerIterator>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgCache::VerIterator>,          // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgCache::VerIterator>),          // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
    0,                                   // tp_compare
-   VersionRepr,                         // tp_repr
+   APT_NATIVE_CALL(VersionRepr),                         // tp_repr
    0,                                   // tp_as_number
    0,		                        // tp_as_sequence
    0,			                // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,                  // tp_flags
    "Version Object",                    // tp_doc
    CppTraverse<pkgCache::VerIterator>, // tp_traverse
    CppClear<pkgCache::VerIterator>,// tp_clear
-   version_richcompare,                 // tp_richcompare
+   APT_NATIVE_CALL(version_richcompare),                 // tp_richcompare
    0,                                   // tp_weaklistoffset
    0,                                   // tp_iter
    0,                                   // tp_iternext
@@ -1255,36 +1255,36 @@ static PyObject *PackageFileRepr(PyObject *Self)
 #undef S
 
 static PyGetSetDef PackageFileGetSet[] = {
-  {"architecture",PackageFile_GetArchitecture,0,
+  {"architecture",APT_NATIVE_CALL(PackageFile_GetArchitecture),0,
    "The architecture of the package file. Unused, empty string nowadays."},
-  {"archive",PackageFile_GetArchive,0,
+  {"archive",APT_NATIVE_CALL(PackageFile_GetArchive),0,
    "The archive of the package file (i.e. 'Suite' in the Release file)."},
-  {"component",PackageFile_GetComponent,0,
+  {"component",APT_NATIVE_CALL(PackageFile_GetComponent),0,
    "The component of this package file (e.g. 'main')."},
-  {"codename",PackageFile_GetCodename,0,
+  {"codename",APT_NATIVE_CALL(PackageFile_GetCodename),0,
    "The codename of this package file (e.g. squeeze-updates)."},
-  {"filename",PackageFile_GetFileName,0,
+  {"filename",APT_NATIVE_CALL(PackageFile_GetFileName),0,
    "The path to the file."},
-  {"id",PackageFile_GetID,0,
+  {"id",APT_NATIVE_CALL(PackageFile_GetID),0,
    "The numeric ID of this PackageFile object."},
-  {"index_type",PackageFile_GetIndexType,0,
+  {"index_type",APT_NATIVE_CALL(PackageFile_GetIndexType),0,
    "A string describing the type of index. Known values are\n"
    "'Debian Package Index', 'Debian Translation Index', and\n"
    "'Debian dpkg status file'."},
-  {"label",PackageFile_GetLabel,0,
+  {"label",APT_NATIVE_CALL(PackageFile_GetLabel),0,
    "The label set in the release file (e.g. 'Debian')."},
-  {"not_automatic",PackageFile_GetNotAutomatic,0,
+  {"not_automatic",APT_NATIVE_CALL(PackageFile_GetNotAutomatic),0,
    "Whether the NotAutomatic flag is set in the Release file."},
-  {"not_source",PackageFile_GetNotSource,0,
+  {"not_source",APT_NATIVE_CALL(PackageFile_GetNotSource),0,
    "Whether this package file lacks an active (sources.list) source;"
    "packages listed in such a file cannot be downloaded."},
-  {"origin",PackageFile_GetOrigin,0,
+  {"origin",APT_NATIVE_CALL(PackageFile_GetOrigin),0,
    "The origin set in the release file."},
-  {"site",PackageFile_GetSite,0,
+  {"site",APT_NATIVE_CALL(PackageFile_GetSite),0,
    "The hostname of the location this file comes from."},
-  {"size",PackageFile_GetSize,0,
+  {"size",APT_NATIVE_CALL(PackageFile_GetSize),0,
    "The size of the file."},
-  {"version",PackageFile_GetVersion,0,
+  {"version",APT_NATIVE_CALL(PackageFile_GetVersion),0,
    "The version set in the release file (e.g. '5.0.X' for lenny, where X\n"
    "is a point release)."},
   {}
@@ -1299,19 +1299,19 @@ PyTypeObject PyPackageFile_Type = {
    "apt_pkg.PackageFile",                                // tp_name
    sizeof(CppPyObject<pkgCache::PkgFileIterator>),  // tp_basicsize
    0,                                                    // tp_itemsize
-   CppDealloc<pkgCache::PkgFileIterator>,           // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgCache::PkgFileIterator>),           // tp_dealloc
    0,                                                    // tp_print
    0,                                                    // tp_getattr
    0,                                                    // tp_setattr
    0,                                                    // tp_compare
-   PackageFileRepr,                                      // tp_repr
+   APT_NATIVE_CALL(PackageFileRepr),                                      // tp_repr
    0,                                                    // tp_as_number
    0,                                                    // tp_as_sequence
    0,                                                    // tp_as_mapping
    0,                                                    // tp_hash
    0,                                                    // tp_call
    0,                                                    // tp_str
-   _PyAptObject_getattro,                                // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),                                // tp_getattro
    0,                                                    // tp_setattro
    0,                                                    // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,              // tp_flags
@@ -1361,7 +1361,7 @@ static PyObject *DepAllTargets(PyObject *Self,PyObject *Args)
 
 static PyMethodDef DependencyMethods[] =
 {
-   {"all_targets",DepAllTargets,METH_VARARGS,
+   {"all_targets",APT_NATIVE_CALL(DepAllTargets),METH_VARARGS,
     "all_targets() -> list\n\n"
     "A list of all possible apt_pkg.Version objects which satisfy this\n"
     "dependency."},
@@ -1440,34 +1440,34 @@ static PyObject *DependencyGetID(PyObject *Self,void*)
 }
 
 static PyGetSetDef DependencyGetSet[] = {
-   {"comp_type",DependencyGetCompType,0,
+   {"comp_type",APT_NATIVE_CALL(DependencyGetCompType),0,
     "The type of comparison in mathematical notation, as a string, namely one "
     "of:\n"
     "'<', '<=', '=', '!=', '>=', '>', ''.\n"
     "The empty string will be returned in case of an unversioned dependency."},
-   {"comp_type_deb",DependencyGetCompTypeDeb,0,
+   {"comp_type_deb",APT_NATIVE_CALL(DependencyGetCompTypeDeb),0,
     "The type of comparison in Debian notation, as a string, namely one of:\n"
     "'<<', '<=', '=', '!=', '>=', '>>', ''.\n"
     "The empty string will be returned in case of an unversioned dependency.\n"
     "For details see the Debian Policy Manual on the syntax of relationship "
     "fields:\n"
     "https://www.debian.org/doc/debian-policy/ch-relationships.html#s-depsyntax"},
-   {"dep_type",DependencyGetDepType,0,
+   {"dep_type",APT_NATIVE_CALL(DependencyGetDepType),0,
     "The type of the dependency; may be translated"},
-   {"dep_type_untranslated",DependencyGetDepTypeUntranslated,0,
+   {"dep_type_untranslated",APT_NATIVE_CALL(DependencyGetDepTypeUntranslated),0,
     "Same as dep_type, but guaranteed to be untranslated."},
-   {"dep_type_enum",DependencyGetDepTypeEnum,0,
+   {"dep_type_enum",APT_NATIVE_CALL(DependencyGetDepTypeEnum),0,
     "Same as dep_type, but with a numeric value instead of a string. Can\n"
     "be compared against the TYPE_ constants defined in this class."},
-   {"id",DependencyGetID,0,
+   {"id",APT_NATIVE_CALL(DependencyGetID),0,
     "The numeric ID of this dependency object."},
-   {"parent_pkg",DependencyGetParentPkg,0,
+   {"parent_pkg",APT_NATIVE_CALL(DependencyGetParentPkg),0,
     "The apt_pkg.Package object of the package which depends."},
-   {"parent_ver",DependencyGetParentVer,0,
+   {"parent_ver",APT_NATIVE_CALL(DependencyGetParentVer),0,
     "The apt_pkg.Version object of the package which depends."},
-   {"target_pkg",DependencyGetTargetPkg,0,
+   {"target_pkg",APT_NATIVE_CALL(DependencyGetTargetPkg),0,
     "The apt_pkg.Package object of the package depended upon"},
-   {"target_ver",DependencyGetTargetVer,0,
+   {"target_ver",APT_NATIVE_CALL(DependencyGetTargetVer),0,
     "The version of the package depended upon as a string"},
    {}
 };
@@ -1485,19 +1485,19 @@ PyTypeObject PyDependency_Type =
    sizeof(CppPyObject<pkgCache::DepIterator>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgCache::DepIterator>,          // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgCache::DepIterator>),          // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
    0,                                   // tp_compare
-   DependencyRepr,                      // tp_repr
+   APT_NATIVE_CALL(DependencyRepr),                      // tp_repr
    0,                                   // tp_as_number
    0,		                        // tp_as_sequence
    0,			                // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, // tp_flags
@@ -1554,10 +1554,10 @@ static PyObject *RDepListItem(PyObject *iSelf,Py_ssize_t Index)
 
 static PySequenceMethods RDepListSeq =
 {
-   RDepListLen,
+   APT_NATIVE_CALL(RDepListLen),
    0,                // concat
    0,                // repeat
-   RDepListItem,
+   APT_NATIVE_CALL(RDepListItem),
    0,                // slice
    0,                // assign item
    0                 // assign slice
@@ -1574,7 +1574,7 @@ PyTypeObject PyDependencyList_Type =
    sizeof(CppPyObject<RDepListStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<RDepListStruct>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<RDepListStruct>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr

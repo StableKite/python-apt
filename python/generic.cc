@@ -13,6 +13,89 @@ using namespace std;
 
 
 #include <apt-pkg/error.h>
+
+#ifdef Py_GIL_DISABLED
+#include <atomic>
+#include <unistd.h>
+
+namespace
+{
+struct ProcessLock
+{
+   explicit ProcessLock(pid_t owner) : process(owner) {}
+
+   const pid_t process;
+   std::recursive_mutex mutex;
+};
+
+struct LockDomain
+{
+   ProcessLock initial{getpid()};
+   std::atomic<ProcessLock *> current{&initial};
+
+   std::recursive_mutex &mutex()
+   {
+      const auto pid = getpid();
+      auto *state = current.load(std::memory_order_acquire);
+      if (state->process == pid)
+         return state->mutex;
+
+      // A subprocess can be forked from a progress callback. It must not wait
+      // on a mutex inherited from a different process.
+      auto *replacement = new ProcessLock(pid);
+      if (!current.compare_exchange_strong(state, replacement,
+                                           std::memory_order_acq_rel)) {
+         delete replacement;
+         return state->mutex;
+      }
+      return replacement->mutex;
+   }
+};
+
+LockDomain native_lock;
+LockDomain *active_domain = &native_lock;
+const char capsule_name[] = "apt_pkg._native_call_lock";
+}
+
+apt_python::NativeCall::NativeCall()
+   : lock_(active_domain->mutex(), std::defer_lock)
+{
+   if (!lock_.try_lock()) {
+      // Keep Python threads (including the lock owner) runnable while waiting.
+      PyThreadState *state = PyEval_SaveThread();
+      try {
+         lock_.lock();
+      } catch (...) {
+         PyEval_RestoreThread(state);
+         throw;
+      }
+      PyEval_RestoreThread(state);
+   }
+}
+
+int apt_python::export_native_lock(PyObject *module)
+{
+   PyObject *capsule = PyCapsule_New(&native_lock, capsule_name, nullptr);
+   if (!capsule)
+      return -1;
+   const int result = PyModule_AddObjectRef(module, "_native_call_lock", capsule);
+   Py_DECREF(capsule);
+   return result;
+}
+
+int apt_python::import_native_lock(PyObject *apt_pkg)
+{
+   PyObject *capsule = PyObject_GetAttrString(apt_pkg, "_native_call_lock");
+   if (!capsule)
+      return -1;
+   auto *domain = static_cast<LockDomain *>(PyCapsule_GetPointer(capsule, capsule_name));
+   Py_DECREF(capsule);
+   if (!domain)
+      return -1;
+   active_domain = domain;
+   return 0;
+}
+#endif
 									/*}}}*/
 
 // HandleErrors - This moves errors from _error to Python Exceptions	/*{{{*/
@@ -56,26 +139,22 @@ err:
 }
 
 									/*}}}*/
-// ListToCharChar - Convert a list to an array of char char		/*{{{*/
+// TupleToArgv - Convert an immutable argument snapshot to argv		/*{{{*/
 // ---------------------------------------------------------------------
-/* Caller must free the result. 0 on error. */
-const char **ListToCharChar(PyObject *List,bool NullTerm)
+bool TupleToArgv(PyObject *tuple, std::vector<const char *> &argv, bool null_terminated)
 {
-   // Convert the argument list into a char **
-   int Length = PySequence_Length(List);
-   const char **Res = new const char *[Length + (NullTerm == true?1:0)];
-   for (int I = 0; I != Length; I++)
+   const auto size = PyTuple_GET_SIZE(tuple);
+   argv.reserve(size + (null_terminated ? 1 : 0));
+   for (Py_ssize_t i = 0; i < size; ++i)
    {
-      PyObject *Itm = PySequence_GetItem(List,I);
-      Res[I] = PyObject_AsString(Itm);
-      if (Res[I] == nullptr) {
-         delete [] Res;
-         return nullptr;
-      }
+      const char *value = PyObject_AsString(PyTuple_GET_ITEM(tuple, i));
+      if (!value)
+         return false;
+      argv.push_back(value);
    }
-   if (NullTerm == true)
-      Res[Length] = 0;
-   return Res;
+   if (null_terminated)
+      argv.push_back(nullptr);
+   return true;
 }
 									/*}}}*/
 // CharCharToList - Inverse of the above				/*{{{*/

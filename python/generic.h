@@ -28,6 +28,8 @@
 #define GENERIC_H
 
 #include <Python.h>
+#include "native-lock.h"
+#include <vector>
 #include <string>
 #include <iostream>
 #include <new>
@@ -253,8 +255,8 @@ template<typename T> static inline PyObject *CppPyPath(T path) {
 // Convert _error into Python exceptions
 PyObject *HandleErrors(PyObject *Res = 0);
 
-// Convert a list of strings to a char **
-const char **ListToCharChar(PyObject *List,bool NullTerm = false);
+// The immutable argument snapshot owns strings for the duration of the call.
+bool TupleToArgv(PyObject *tuple, std::vector<const char *> &argv, bool null_terminated = false);
 PyObject *CharCharToList(const char **List,unsigned long Size = 0);
 
 /* Happy number conversion, thanks to overloading */

@@ -84,19 +84,19 @@ static PyObject *hashstring_verify_file(PyObject *self,PyObject *args)
 }
 
 static PyMethodDef hashstring_methods[] = {
-    {"verify_file",hashstring_verify_file,METH_VARARGS,
+    {"verify_file",APT_NATIVE_CALL(hashstring_verify_file),METH_VARARGS,
      hashstring_verify_file_doc},
     {NULL}
 };
 
 static PyGetSetDef hashstring_getset[] = {
-    {"hashtype",(getter)hashstring_get_hashtype,0,
+    {"hashtype",(getter)APT_NATIVE_CALL(hashstring_get_hashtype),0,
      "The type of the hash, as a string (possible: MD5Sum,SHA1,SHA256)."},
-    {"hashvalue",(getter)hashstring_get_hashvalue,0,
+    {"hashvalue",(getter)APT_NATIVE_CALL(hashstring_get_hashvalue),0,
      "The value of the hash, as a hexadecimal string\n"
      "\n"
      ".. versionadded:: 1.9.0"},
-    {"usable",(getter)hashstring_get_usable,0,
+    {"usable",(getter)APT_NATIVE_CALL(hashstring_get_usable),0,
      "True if the hashstring is a trusted hash type."},
     {NULL}
 };
@@ -144,18 +144,18 @@ PyTypeObject PyHashString_Type = {
     sizeof(CppPyObject<HashString*>),  // tp_basicsize
     0,                                 // tp_itemsize
     // Methods
-    CppDeallocPtr<HashString*>,        // tp_dealloc
+    APT_NATIVE_CALL(CppDeallocPtr<HashString*>),        // tp_dealloc
     0,                                 // tp_print
     0,                                 // tp_getattr
     0,                                 // tp_setattr
     0,                                 // tp_compare
-    hashstring_repr,                   // tp_repr
+    APT_NATIVE_CALL(hashstring_repr),                   // tp_repr
     0,                                 // tp_as_number
     0,                                 // tp_as_sequence
     0,                                 // tp_as_mapping
     0,                                 // tp_hash
     0,                                 // tp_call
-    hashstring_str,                    // tp_str
+    APT_NATIVE_CALL(hashstring_str),                    // tp_str
     0,                                 // tp_getattro
     0,                                 // tp_setattro
     0,                                 // tp_as_buffer
@@ -164,7 +164,7 @@ PyTypeObject PyHashString_Type = {
     hashstring_doc,                    // tp_doc
     0,                                 // tp_traverse
     0,                                 // tp_clear
-    hashstring_richcompare,            // tp_richcompare
+    APT_NATIVE_CALL(hashstring_richcompare),            // tp_richcompare
     0,                                 // tp_weaklistoffset
     0,                                 // tp_iter
     0,                                 // tp_iternext
@@ -178,5 +178,5 @@ PyTypeObject PyHashString_Type = {
     0,                                 // tp_dictoffset
     0,                                 // tp_init
     0,                                 // tp_alloc
-    hashstring_new,                    // tp_new
+    APT_NATIVE_CALL(hashstring_new),                    // tp_new
 };

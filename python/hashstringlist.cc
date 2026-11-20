@@ -141,10 +141,10 @@ static PyObject *hashstringlist_getitem(PyObject *iSelf, Py_ssize_t index)
 }
 
 static PySequenceMethods hashstringlist_seq_methods = {
-    hashstringlist_len,
+    APT_NATIVE_CALL(hashstringlist_len),
     0,                          // concat
     0,                          // repeat
-    hashstringlist_getitem,
+    APT_NATIVE_CALL(hashstringlist_getitem),
     0,                          // slice
     0,                          // assign item
     0                           // assign slice
@@ -152,19 +152,19 @@ static PySequenceMethods hashstringlist_seq_methods = {
 
 static PyMethodDef hashstringlist_methods[] =
 {
-    {"verify_file",hashstringlist_verify_file,METH_VARARGS,
+    {"verify_file",APT_NATIVE_CALL(hashstringlist_verify_file),METH_VARARGS,
      hashstringlist_verify_file_doc},
-    {"find",hashstringlist_find,METH_VARARGS,
+    {"find",APT_NATIVE_CALL(hashstringlist_find),METH_VARARGS,
      hashstringlist_find_doc},
-    {"append",hashstringlist_append,METH_VARARGS,
+    {"append",APT_NATIVE_CALL(hashstringlist_append),METH_VARARGS,
      hashstringlist_append_doc},
     {}
 };
 
 static PyGetSetDef hashstringlist_getset[] = {
-    {"file_size",hashstringlist_get_file_size,hashstringlist_set_file_size,
+    {"file_size",APT_NATIVE_CALL(hashstringlist_get_file_size),APT_NATIVE_CALL(hashstringlist_set_file_size),
      "If a file size is part of the list, return it, otherwise 0."},
-    {"usable",hashstringlist_get_usable,nullptr,
+    {"usable",APT_NATIVE_CALL(hashstringlist_get_usable),nullptr,
      "True if at least one safe/trusted hash is in the list."},
     {}
 };
@@ -183,7 +183,7 @@ PyTypeObject PyHashStringList_Type = {
     sizeof(CppPyObject<HashStringList>),     // tp_basicsize
     0,                          // tp_itemsize
     // Methods
-    CppDealloc<HashStringList>, // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<HashStringList>), // tp_dealloc
     0,                          // tp_print
     0,                          // tp_getattr
     0,                          // tp_setattr
@@ -214,7 +214,7 @@ PyTypeObject PyHashStringList_Type = {
     0,                          // tp_descr_get
     0,                          // tp_descr_set
     0,                          // tp_dictoffset
-    hashstringlist_init,        // tp_init
+    APT_NATIVE_CALL(hashstringlist_init),        // tp_init
     0,                          // tp_alloc
-    hashstringlist_new,         // tp_new
+    APT_NATIVE_CALL(hashstringlist_new),         // tp_new
 };

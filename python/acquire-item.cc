@@ -136,33 +136,33 @@ static int acquireitem_set_id(PyObject *self, PyObject *value, void *closure)
 
 
 static PyGetSetDef acquireitem_getset[] = {
-    {"complete",acquireitem_get_complete,0,
+    {"complete",APT_NATIVE_CALL(acquireitem_get_complete),0,
      "A boolean value determining whether the item has been fetched\n"
      "completely"},
-    {"desc_uri",acquireitem_get_desc_uri,NULL,
+    {"desc_uri",APT_NATIVE_CALL(acquireitem_get_desc_uri),NULL,
      "A string describing the URI from which the item is acquired."},
-    {"destfile",acquireitem_get_destfile,NULL,
+    {"destfile",APT_NATIVE_CALL(acquireitem_get_destfile),NULL,
      "The path to the file where the item will be stored."},
-    {"error_text",acquireitem_get_error_text,NULL,
+    {"error_text",APT_NATIVE_CALL(acquireitem_get_error_text),NULL,
      "If an error occurred, a string describing the error; empty string\n"
      "otherwise."},
-    {"filesize",acquireitem_get_filesize,NULL,
+    {"filesize",APT_NATIVE_CALL(acquireitem_get_filesize),NULL,
      "The size of the file (number of bytes). If unknown, it is set to 0."},
-    {"id",acquireitem_get_id,acquireitem_set_id,
+    {"id",APT_NATIVE_CALL(acquireitem_get_id),APT_NATIVE_CALL(acquireitem_set_id),
      "The ID of the item. An integer which can be set by progress classes."},
-    {"mode",acquireitem_get_mode,NULL,
+    {"mode",APT_NATIVE_CALL(acquireitem_get_mode),NULL,
      "Old name for active_subprocess"},
-    {"active_subprocess",acquireitem_get_active_subprocess,NULL,
+    {"active_subprocess",APT_NATIVE_CALL(acquireitem_get_active_subprocess),NULL,
      "The name of the active subprocess (for instance, 'gzip', 'rred' or 'gpgv')."},
-    {"is_trusted",acquireitem_get_is_trusted,NULL,
+    {"is_trusted",APT_NATIVE_CALL(acquireitem_get_is_trusted),NULL,
      "Whether the item is trusted or not. Only True for packages\n"
      "which come from a repository signed with one of the keys in\n"
      "APT's keyring."},
-    {"local",acquireitem_get_local,NULL,
+    {"local",APT_NATIVE_CALL(acquireitem_get_local),NULL,
      "Whether we are fetching a local item (copy:/) or not."},
-    {"partialsize",acquireitem_get_partialsize,NULL,
+    {"partialsize",APT_NATIVE_CALL(acquireitem_get_partialsize),NULL,
      "The amount of data which has already been fetched (number of bytes)."},
-    {"status",acquireitem_get_status,NULL,
+    {"status",APT_NATIVE_CALL(acquireitem_get_status),NULL,
      "An integer representing the item's status which can be compared\n"
      "against one of the STAT_* constants defined in this class."},
     {}
@@ -205,19 +205,19 @@ PyTypeObject PyAcquireItem_Type = {
     sizeof(CppPyObject<pkgAcquire::Item*>),   // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    acquireitem_dealloc,                  // tp_dealloc
+    APT_NATIVE_CALL(acquireitem_dealloc),                  // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
     0,                                   // tp_compare
-    acquireitem_repr,                     // tp_repr
+    APT_NATIVE_CALL(acquireitem_repr),                     // tp_repr
     0,                                   // tp_as_number
     0,                                   // tp_as_sequence
     0,                                   // tp_as_mapping
     0,                                   // tp_hash
     0,                                   // tp_call
     0,                                   // tp_str
-    _PyAptObject_getattro,               // tp_getattro
+    APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
     0,                                   // tp_setattro
     0,                                   // tp_as_buffer
     Py_TPFLAGS_DEFAULT |
@@ -316,7 +316,7 @@ PyTypeObject PyAcquireFile_Type = {
     sizeof(CppPyObject<pkgAcqFile*>),// tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    acquireitem_dealloc,                 // tp_dealloc
+    APT_NATIVE_CALL(acquireitem_dealloc),                 // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -351,6 +351,6 @@ PyTypeObject PyAcquireFile_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    acquirefile_new,                     // tp_new
+    APT_NATIVE_CALL(acquirefile_new),                     // tp_new
 };
 

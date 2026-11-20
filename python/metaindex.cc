@@ -53,14 +53,14 @@ static PyObject *MetaIndexGetIndexFiles(PyObject *Self,void*) {
 }
 
 static PyGetSetDef MetaIndexGetSet[] = {
-   {"dist",MetaIndexGetDist,0,"The distribution, as a string."},
-   {"index_files",MetaIndexGetIndexFiles,0,
+   {"dist",APT_NATIVE_CALL(MetaIndexGetDist),0,"The distribution, as a string."},
+   {"index_files",APT_NATIVE_CALL(MetaIndexGetIndexFiles),0,
     "A list of all IndexFile objects associated with this meta index."},
-   {"is_trusted",MetaIndexGetIsTrusted,0,
+   {"is_trusted",APT_NATIVE_CALL(MetaIndexGetIsTrusted),0,
     "A boolean value determining whether the file can be trusted."},
-   {"uri",MetaIndexGetURI,0,
+   {"uri",APT_NATIVE_CALL(MetaIndexGetURI),0,
     "The uri the meta index is located at."},
-   {"type",MetaIndexGetType,0,
+   {"type",APT_NATIVE_CALL(MetaIndexGetType),0,
     "The type of the meta index."},
    {}
 };
@@ -88,19 +88,19 @@ PyTypeObject PyMetaIndex_Type =
    sizeof(CppPyObject<metaIndex*>),   // tp_basicsize
    0,                                      // tp_itemsize
    // Methods
-   CppDeallocPtr<metaIndex*>,         // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<metaIndex*>),         // tp_dealloc
    0,                                      // tp_print
    0,                                      // tp_getattr
    0,                                      // tp_setattr
    0,                                      // tp_compare
-   MetaIndexRepr,                          // tp_repr
+   APT_NATIVE_CALL(MetaIndexRepr),                          // tp_repr
    0,                                      // tp_as_number
    0,                                      // tp_as_sequence
    0,                                      // tp_as_mapping
    0,                                      // tp_hash
    0,                                      // tp_call
    0,                                      // tp_str
-   _PyAptObject_getattro,                  // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),                  // tp_getattro
    0,                                      // tp_setattro
    0,                                      // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                     // tp_flags

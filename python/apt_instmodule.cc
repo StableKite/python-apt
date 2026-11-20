@@ -61,6 +61,8 @@ extern "C" void initapt_inst()
 {
 #if PY_MAJOR_VERSION >= 3
    PyObject *module = PyModule_Create(&moduledef);
+   if (module == nullptr)
+      INIT_ERROR;
 #else
    PyObject *module = Py_InitModule3("apt_inst",methods, apt_inst_doc);
 #endif
@@ -68,10 +70,18 @@ extern "C" void initapt_inst()
    PyObject *apt_pkg = PyImport_ImportModule("apt_pkg");
    if (apt_pkg == NULL)
       INIT_ERROR;
+#ifdef Py_GIL_DISABLED
+   if (apt_python::import_native_lock(apt_pkg) < 0) {
+      Py_DECREF(apt_pkg);
+      Py_DECREF(module);
+      INIT_ERROR;
+   }
+#endif
    PyAptError = PyObject_GetAttrString(apt_pkg, "Error");
    if (PyAptError == NULL)
       INIT_ERROR;
    PyAptWarning = PyObject_GetAttrString(apt_pkg, "Warning");
+   Py_DECREF(apt_pkg);
    if (PyAptWarning == NULL)
       INIT_ERROR;
 
@@ -83,5 +93,11 @@ extern "C" void initapt_inst()
    ADDTYPE(module,"TarFile",&PyTarFile_Type);
    ADDTYPE(module,"TarMember",&PyTarMember_Type);
    ADDTYPE(module,"__FileFd",&PyFileFd_Type);
+#ifdef Py_GIL_DISABLED
+   if (PyUnstable_Module_SetGIL(module, Py_MOD_GIL_NOT_USED) < 0) {
+      Py_DECREF(module);
+      INIT_ERROR;
+   }
+#endif
    RETURN(module);
 }

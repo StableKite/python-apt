@@ -84,9 +84,9 @@ static PyObject *PkgSourceListGetIndexes(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgSourceListMethods[] =
 {
-   {"find_index",PkgSourceListFindIndex,METH_VARARGS,doc_PkgSourceListFindIndex},
-   {"read_main_list",PkgSourceListReadMainList,METH_VARARGS,doc_PkgSourceListReadMainList},
-   {"get_indexes",PkgSourceListGetIndexes,METH_VARARGS,doc_PkgSourceListGetIndexes},
+   {"find_index",APT_NATIVE_CALL(PkgSourceListFindIndex),METH_VARARGS,doc_PkgSourceListFindIndex},
+   {"read_main_list",APT_NATIVE_CALL(PkgSourceListReadMainList),METH_VARARGS,doc_PkgSourceListReadMainList},
+   {"get_indexes",APT_NATIVE_CALL(PkgSourceListGetIndexes),METH_VARARGS,doc_PkgSourceListGetIndexes},
    {}
 };
 
@@ -108,7 +108,7 @@ static PyObject *PkgSourceListGetList(PyObject *Self,void*)
 }
 
 static PyGetSetDef PkgSourceListGetSet[] = {
-    {"list",PkgSourceListGetList,0,"A list of MetaIndex() objects.",0},
+    {"list",APT_NATIVE_CALL(PkgSourceListGetList),0,"A list of MetaIndex() objects.",0},
     {}
 };
 
@@ -131,7 +131,7 @@ PyTypeObject PySourceList_Type =
    sizeof(CppPyObject<pkgSourceList*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgSourceList*>,       // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgSourceList*>),       // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -143,7 +143,7 @@ PyTypeObject PySourceList_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -165,6 +165,6 @@ PyTypeObject PySourceList_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgSourceListNew,                    // tp_new
+   APT_NATIVE_CALL(PkgSourceListNew),                    // tp_new
 };
 

@@ -78,7 +78,7 @@ static PyObject *hashes_get_hashes(PyObject *self, void*)
 
 
 static PyGetSetDef hashes_getset[] = {
-    {"hashes",hashes_get_hashes,0,
+    {"hashes",APT_NATIVE_CALL(hashes_get_hashes),0,
      "A :class:`HashStringList` of all hashes.\n\n"
      ".. versionadded:: 1.1"},
     {}
@@ -97,7 +97,7 @@ PyTypeObject PyHashes_Type = {
     sizeof(CppPyObject<Hashes>),       // tp_basicsize
     0,                                 // tp_itemsize
     // Methods
-    CppDealloc<Hashes>,                // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<Hashes>),                // tp_dealloc
     0,                                 // tp_print
     0,                                 // tp_getattr
     0,                                 // tp_setattr
@@ -129,7 +129,7 @@ PyTypeObject PyHashes_Type = {
     0,                                 // tp_descr_get
     0,                                 // tp_descr_set
     0,                                 // tp_dictoffset
-    hashes_init,                       // tp_init
+    APT_NATIVE_CALL(hashes_init),                       // tp_init
     0,                                 // tp_alloc
-    hashes_new,                        // tp_new
+    APT_NATIVE_CALL(hashes_new),                        // tp_new
 };

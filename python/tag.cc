@@ -221,18 +221,22 @@ static PyObject *TagSecWrite(PyObject *Self, PyObject *Args, PyObject *kwds)
    }
 
    FileFd file(fileno);
-   const char **order = ListToCharChar(pOrder,true);
-   if (order == nullptr)
+   PyApt_UniqueObject<PyObject, false> order_snapshot(PyList_AsTuple(pOrder));
+   PyApt_UniqueObject<PyObject, false> rewrite_snapshot(PyList_AsTuple(pRewrite));
+   if (!order_snapshot.get() || !rewrite_snapshot.get())
+      return nullptr;
+   std::vector<const char *> order;
+   if (!TupleToArgv(order_snapshot.get(), order, true))
       return nullptr;
    std::vector<pkgTagSection::Tag> rewrite;
-   for (int I = 0; I != PySequence_Length(pRewrite); I++) {
-      PyObject *item = PySequence_GetItem(pRewrite, I);
+   for (Py_ssize_t I = 0; I != PyTuple_GET_SIZE(rewrite_snapshot.get()); I++) {
+      PyObject *item = PyTuple_GET_ITEM(rewrite_snapshot.get(), I);
       if (!PyObject_TypeCheck(item, &PyTag_Type))
          return PyErr_SetString(PyExc_TypeError, "Wrong type for tag in list"), nullptr;
       rewrite.push_back(GetCpp<pkgTagSection::Tag>(item));
    }
 
-   return HandleErrors(PyBool_FromLong(GetCpp<pkgTagSection>(Self).Write(file, order, rewrite)));
+   return HandleErrors(PyBool_FromLong(GetCpp<pkgTagSection>(Self).Write(file, order.data(), rewrite)));
 }
 
 
@@ -615,24 +619,24 @@ static PyObject *TagFileNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 static PyMethodDef TagSecMethods[] =
 {
    // Query
-   {"find",TagSecFind,METH_VARARGS,doc_Find},
-   {"find_raw",TagSecFindRaw,METH_VARARGS,doc_FindRaw},
-   {"find_flag",TagSecFindFlag,METH_VARARGS,doc_FindFlag},
-   {"bytes",TagSecBytes,METH_VARARGS,doc_Bytes},
-   {"write",(PyCFunction) TagSecWrite,METH_VARARGS|METH_KEYWORDS,doc_Write},
+   {"find",APT_NATIVE_CALL(TagSecFind),METH_VARARGS,doc_Find},
+   {"find_raw",APT_NATIVE_CALL(TagSecFindRaw),METH_VARARGS,doc_FindRaw},
+   {"find_flag",APT_NATIVE_CALL(TagSecFindFlag),METH_VARARGS,doc_FindFlag},
+   {"bytes",APT_NATIVE_CALL(TagSecBytes),METH_VARARGS,doc_Bytes},
+   {"write",(PyCFunction) APT_NATIVE_CALL(TagSecWrite),METH_VARARGS|METH_KEYWORDS,doc_Write},
 
    // Python Special
-   {"keys",TagSecKeys,METH_VARARGS,doc_Keys},
+   {"keys",APT_NATIVE_CALL(TagSecKeys),METH_VARARGS,doc_Keys},
 #if PY_MAJOR_VERSION < 3
-   {"has_key",TagSecExists,METH_VARARGS,doc_Exists},
+   {"has_key",APT_NATIVE_CALL(TagSecExists),METH_VARARGS,doc_Exists},
 #endif
-   {"get",TagSecFind,METH_VARARGS,doc_Find},
+   {"get",APT_NATIVE_CALL(TagSecFind),METH_VARARGS,doc_Find},
    {}
 };
 
 
-PySequenceMethods TagSecSeqMeth = {0,0,0,0,0,0,0,TagSecContains,0,0};
-PyMappingMethods TagSecMapMeth = {TagSecLength,TagSecMap,0};
+PySequenceMethods TagSecSeqMeth = {0,0,0,0,0,0,0,APT_NATIVE_CALL(TagSecContains),0,0};
+PyMappingMethods TagSecMapMeth = {APT_NATIVE_CALL(TagSecLength),APT_NATIVE_CALL(TagSecMap),0};
 
 
 static char *doc_TagSec = "TagSection(text: str, [bytes: bool = False])\n\n"
@@ -651,7 +655,7 @@ PyTypeObject PyTagSection_Type =
    sizeof(TagSecData),                  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   TagSecFree,                          // tp_dealloc
+   APT_NATIVE_CALL(TagSecFree),                          // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -662,8 +666,8 @@ PyTypeObject PyTagSection_Type =
    &TagSecMapMeth,                      // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
-   TagSecStr,                           // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(TagSecStr),                           // tp_str
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -686,19 +690,19 @@ PyTypeObject PyTagSection_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   TagSecNew,                           // tp_new
+   APT_NATIVE_CALL(TagSecNew),                           // tp_new
 };
 
 // Method table for the Tag File object
 static PyMethodDef TagFileMethods[] =
 {
    // Query
-   {"step",TagFileStep,METH_VARARGS,doc_Step},
-   {"offset",TagFileOffset,METH_VARARGS,doc_Offset},
-   {"jump",TagFileJump,METH_VARARGS,doc_Jump},
-   {"close",TagFileClose,METH_VARARGS,doc_Close},
-   {"__enter__",TagFileEnter,METH_VARARGS,"Context manager entry, return self."},
-   {"__exit__",TagFileExit,METH_VARARGS,"Context manager exit, calls close."},
+   {"step",APT_NATIVE_CALL(TagFileStep),METH_VARARGS,doc_Step},
+   {"offset",APT_NATIVE_CALL(TagFileOffset),METH_VARARGS,doc_Offset},
+   {"jump",APT_NATIVE_CALL(TagFileJump),METH_VARARGS,doc_Jump},
+   {"close",APT_NATIVE_CALL(TagFileClose),METH_VARARGS,doc_Close},
+   {"__enter__",APT_NATIVE_CALL(TagFileEnter),METH_VARARGS,"Context manager entry, return self."},
+   {"__exit__",APT_NATIVE_CALL(TagFileExit),METH_VARARGS,"Context manager exit, calls close."},
 
    {}
 };
@@ -711,7 +715,7 @@ static PyObject *TagFileGetSection(PyObject *Self,void*) {
 }
 
 static PyGetSetDef TagFileGetSet[] = {
-    {"section",TagFileGetSection,0,
+    {"section",APT_NATIVE_CALL(TagFileGetSection),0,
      "The current section, as a TagSection object.",0},
     {}
 };
@@ -743,7 +747,7 @@ PyTypeObject PyTagFile_Type =
    sizeof(TagFileData),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   TagFileFree,                         // tp_dealloc
+   APT_NATIVE_CALL(TagFileFree),                         // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -755,7 +759,7 @@ PyTypeObject PyTagFile_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -766,8 +770,8 @@ PyTypeObject PyTagFile_Type =
    TagFileClear,                        // tp_clear
    0,                                   // tp_richcompare
    0,                                   // tp_weaklistoffset
-   TagFileIter,                         // tp_iter
-   TagFileNext,                         // tp_iternext
+   APT_NATIVE_CALL(TagFileIter),                         // tp_iter
+   APT_NATIVE_CALL(TagFileNext),                         // tp_iternext
    TagFileMethods,                      // tp_methods
    0,                                   // tp_members
    TagFileGetSet,                       // tp_getset
@@ -778,7 +782,7 @@ PyTypeObject PyTagFile_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   TagFileNew,                          // tp_new
+   APT_NATIVE_CALL(TagFileNew),                          // tp_new
 
 };
 
@@ -852,11 +856,11 @@ static PyObject *PyTagRemove_New(PyTypeObject *type,PyObject *Args,PyObject *kwd
 }
 
 static PyGetSetDef TagGetSet[] = {
-    {"action",TagGetAction,0,
+    {"action",APT_NATIVE_CALL(TagGetAction),0,
      "The action to perform.",0},
-    {"name",TagGetName,0,
+    {"name",APT_NATIVE_CALL(TagGetName),0,
      "The name of the tag to perform the action on.",0},
-    {"data",TagGetData,0,
+    {"data",APT_NATIVE_CALL(TagGetData),0,
      "The data to write instead (for REWRITE), or the new tag name (RENAME)",0},
     {}
 };
@@ -895,7 +899,7 @@ PyTypeObject PyTag_Type =
    sizeof(CppPyObject<pkgTagSection::Tag>),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgTagSection::Tag>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgTagSection::Tag>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -940,7 +944,7 @@ PyTypeObject PyTagRewrite_Type =
    sizeof(CppPyObject<pkgTagSection::Tag>),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgTagSection::Tag>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgTagSection::Tag>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -973,7 +977,7 @@ PyTypeObject PyTagRewrite_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PyTagRewrite_New,                    // tp_new
+   APT_NATIVE_CALL(PyTagRewrite_New),                    // tp_new
 };
 
 // Type for a Tag File
@@ -984,7 +988,7 @@ PyTypeObject PyTagRemove_Type =
    sizeof(CppPyObject<pkgTagSection::Tag>),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgTagSection::Tag>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgTagSection::Tag>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -1017,7 +1021,7 @@ PyTypeObject PyTagRemove_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PyTagRemove_New,                     // tp_new
+   APT_NATIVE_CALL(PyTagRemove_New),                     // tp_new
 };
 
 // Type for a Tag File
@@ -1028,7 +1032,7 @@ PyTypeObject PyTagRename_Type =
    sizeof(CppPyObject<pkgTagSection::Tag>),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgTagSection::Tag>,      // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<pkgTagSection::Tag>),      // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -1061,5 +1065,5 @@ PyTypeObject PyTagRename_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PyTagRename_New,                     // tp_new
+   APT_NATIVE_CALL(PyTagRename_New),                     // tp_new
 };

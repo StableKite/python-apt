@@ -28,7 +28,7 @@ PyTypeObject PyPackageManagerProgressFancy_Type =
    sizeof(CppPyObject<APT::Progress::PackageManagerFancy*>), // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<APT::Progress::PackageManagerFancy*>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<APT::Progress::PackageManagerFancy*>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -40,7 +40,7 @@ PyTypeObject PyPackageManagerProgressFancy_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flag,
@@ -61,7 +61,7 @@ PyTypeObject PyPackageManagerProgressFancy_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgManagerProgressFancyNew,          // tp_new
+   APT_NATIVE_CALL(PkgManagerProgressFancyNew),          // tp_new
 };
 
 

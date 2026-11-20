@@ -19,6 +19,7 @@
 
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/cmndline.h>
+#include <limits>
 #include <sstream>
 #include <Python.h>
 									/*}}}*/
@@ -441,28 +442,36 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
       return 0;
    }
 
-   if (PySequence_Length(Pargv) < 1) {
+   PyApt_UniqueObject<PyObject, false> options(PyList_AsTuple(POList));
+   PyApt_UniqueObject<PyObject, false> arguments(PyList_AsTuple(Pargv));
+   if (!options.get() || !arguments.get())
+      return nullptr;
+   const auto argc = PyTuple_GET_SIZE(arguments.get());
+   if (argc < 1) {
       PyErr_SetString(PyExc_ValueError,"argv is an empty sequence");
       return 0;
    }
+   if (argc > std::numeric_limits<int>::max()) {
+      PyErr_SetString(PyExc_OverflowError, "too many command line arguments");
+      return nullptr;
+   }
    // Convert the option list
-   int Length = PySequence_Length(POList);
-   CommandLine::Args *OList = new CommandLine::Args[Length+1];
+   auto Length = PyTuple_GET_SIZE(options.get());
+   std::vector<CommandLine::Args> OList(Length + 1);
    OList[Length].ShortOpt = 0;
    OList[Length].LongOpt = 0;
 
-   for (int I = 0; I != Length; I++)
+   for (Py_ssize_t I = 0; I != Length; I++)
    {
       char *Type = 0;
       #if PY_MAJOR_VERSION >= 3
-      if (PyArg_ParseTuple(PySequence_GetItem(POList,I),"Czs|s",
+      if (PyArg_ParseTuple(PyTuple_GET_ITEM(options.get(),I),"Czs|s",
       #else
-      if (PyArg_ParseTuple(PySequence_GetItem(POList,I),"czs|s",
+      if (PyArg_ParseTuple(PyTuple_GET_ITEM(options.get(),I),"czs|s",
       #endif
 			   &OList[I].ShortOpt,&OList[I].LongOpt,
 			   &OList[I].ConfName,&Type) == 0)
       {
-	 delete [] OList;
 	 return 0;
       }
       OList[I].Flags = 0;
@@ -486,23 +495,16 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
    }
 
    // Convert the argument list into a char **
-   const char **argv = ListToCharChar(Pargv);
-   if (argv == 0)
-   {
-      delete [] OList;
-      return 0;
-   }
+   std::vector<const char *> argv;
+   if (!TupleToArgv(arguments.get(), argv))
+      return nullptr;
 
    // Do the command line processing
    PyObject *List = 0;
    {
-      CommandLine CmdL(OList,&GetSelf(Self));
-      if (CmdL.Parse(PySequence_Length(Pargv),argv) == false)
-      {
-	 delete [] argv;
-	 delete [] OList;
+      CommandLine CmdL(OList.data(),&GetSelf(Self));
+      if (!CmdL.Parse(static_cast<int>(argc),argv.data()))
 	 return HandleErrors();
-      }
 
       // Convert the file listing into a python sequence
       for (Length = 0; CmdL.FileList[Length] != 0; Length++);
@@ -513,8 +515,6 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
       }
    }
 
-   delete [] argv;
-   delete [] OList;
    return HandleErrors(List);
 }
 									/*}}}*/
@@ -523,27 +523,27 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
 static PyMethodDef CnfMethods[] =
 {
    // Query
-   {"find",CnfFind,METH_VARARGS,doc_Find},
-   {"find_file",CnfFindFile,METH_VARARGS,doc_FindFile},
-   {"find_dir",CnfFindDir,METH_VARARGS,doc_FindDir},
-   {"find_i",CnfFindI,METH_VARARGS,doc_FindI},
-   {"find_b",CnfFindB,METH_VARARGS,doc_FindB},
+   {"find",APT_NATIVE_CALL(CnfFind),METH_VARARGS,doc_Find},
+   {"find_file",APT_NATIVE_CALL(CnfFindFile),METH_VARARGS,doc_FindFile},
+   {"find_dir",APT_NATIVE_CALL(CnfFindDir),METH_VARARGS,doc_FindDir},
+   {"find_i",APT_NATIVE_CALL(CnfFindI),METH_VARARGS,doc_FindI},
+   {"find_b",APT_NATIVE_CALL(CnfFindB),METH_VARARGS,doc_FindB},
 
    // Others
-   {"set",CnfSet,METH_VARARGS,doc_Set},
-   {"exists",CnfExists,METH_VARARGS,doc_Exists},
-   {"subtree",CnfSubTree,METH_VARARGS,doc_SubTree},
-   {"list",CnfList,METH_VARARGS,doc_List},
-   {"value_list",CnfValueList,METH_VARARGS,doc_ValueList},
-   {"my_tag",CnfMyTag,METH_VARARGS,doc_MyTag},
-   {"clear",CnfClear,METH_VARARGS,doc_Clear},
-   {"dump",CnfDump,METH_VARARGS,doc_Dump},
+   {"set",APT_NATIVE_CALL(CnfSet),METH_VARARGS,doc_Set},
+   {"exists",APT_NATIVE_CALL(CnfExists),METH_VARARGS,doc_Exists},
+   {"subtree",APT_NATIVE_CALL(CnfSubTree),METH_VARARGS,doc_SubTree},
+   {"list",APT_NATIVE_CALL(CnfList),METH_VARARGS,doc_List},
+   {"value_list",APT_NATIVE_CALL(CnfValueList),METH_VARARGS,doc_ValueList},
+   {"my_tag",APT_NATIVE_CALL(CnfMyTag),METH_VARARGS,doc_MyTag},
+   {"clear",APT_NATIVE_CALL(CnfClear),METH_VARARGS,doc_Clear},
+   {"dump",APT_NATIVE_CALL(CnfDump),METH_VARARGS,doc_Dump},
    // Python Special
-   {"keys",CnfKeys,METH_VARARGS,doc_Keys},
+   {"keys",APT_NATIVE_CALL(CnfKeys),METH_VARARGS,doc_Keys},
    #if PY_MAJOR_VERSION < 3
-   {"has_key",CnfExists,METH_VARARGS,doc_Exists},
+   {"has_key",APT_NATIVE_CALL(CnfExists),METH_VARARGS,doc_Exists},
    #endif
-   {"get",CnfFind,METH_VARARGS,doc_Find},
+   {"get",APT_NATIVE_CALL(CnfFind),METH_VARARGS,doc_Find},
    {}
 };
 
@@ -555,8 +555,8 @@ static PyObject *CnfNew(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 // Type for a Normal Configuration object
-static PySequenceMethods ConfigurationSeq = {0,0,0,0,0,0,0,CnfContains,0,0};
-static PyMappingMethods ConfigurationMap = {0,CnfMap,CnfMapSet};
+static PySequenceMethods ConfigurationSeq = {0,0,0,0,0,0,0,APT_NATIVE_CALL(CnfContains),0,0};
+static PyMappingMethods ConfigurationMap = {0,APT_NATIVE_CALL(CnfMap),APT_NATIVE_CALL(CnfMapSet)};
 
 static const char *configuration_doc =
     "Configuration()\n\n"
@@ -574,7 +574,7 @@ PyTypeObject PyConfiguration_Type =
    sizeof(CppPyObject<Configuration*>),  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<Configuration*>,  // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<Configuration*>),  // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -586,7 +586,7 @@ PyTypeObject PyConfiguration_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -608,6 +608,6 @@ PyTypeObject PyConfiguration_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   CnfNew,                              // tp_new
+   APT_NATIVE_CALL(CnfNew),                              // tp_new
 };
 

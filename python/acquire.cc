@@ -71,15 +71,15 @@ static PyObject *acquireworker_get_resumepoint(PyObject *self, void *closure)
 }
 
 static PyGetSetDef acquireworker_getset[] = {
-    {"current_item",acquireworker_get_current_item,0,
+    {"current_item",APT_NATIVE_CALL(acquireworker_get_current_item),0,
      "The item currently being fetched, as an apt_pkg.AcquireItemDesc object."},
-    {"status",acquireworker_get_status,0,
+    {"status",APT_NATIVE_CALL(acquireworker_get_status),0,
      "The status of the worker, as a string."},
-    {"current_size",acquireworker_get_current_size,0,
+    {"current_size",APT_NATIVE_CALL(acquireworker_get_current_size),0,
      "The amount of data fetched so far for the current item."},
-    {"total_size",acquireworker_get_total_size,0,
+    {"total_size",APT_NATIVE_CALL(acquireworker_get_total_size),0,
      "The total size of the item."},
-    {"resumepoint",acquireworker_get_resumepoint,0,
+    {"resumepoint",APT_NATIVE_CALL(acquireworker_get_resumepoint),0,
      "The amount of data which was already available when the download was\n"
      "started."},
     {NULL}
@@ -96,7 +96,7 @@ PyTypeObject PyAcquireWorker_Type = {
     sizeof(CppPyObject<pkgAcquire::Worker*>),// tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDealloc<pkgAcquire::Worker*>, // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<pkgAcquire::Worker*>), // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -163,13 +163,13 @@ static PyObject *acquireitemdesc_get_owner(CppPyObject<pkgAcquire::ItemDesc*> *s
 }
 
 static PyGetSetDef acquireitemdesc_getset[] = {
-    {"uri",acquireitemdesc_get_uri,0,
+    {"uri",APT_NATIVE_CALL(acquireitemdesc_get_uri),0,
      "The URI from which this item would be downloaded."},
-    {"description",acquireitemdesc_get_description,0,
+    {"description",APT_NATIVE_CALL(acquireitemdesc_get_description),0,
      "A string describing the item."},
-    {"shortdesc",acquireitemdesc_get_shortdesc,0,
+    {"shortdesc",APT_NATIVE_CALL(acquireitemdesc_get_shortdesc),0,
      "A short string describing the item (e.g. package name)."},
-    {"owner",(getter)acquireitemdesc_get_owner,0,
+    {"owner",(getter)APT_NATIVE_CALL(acquireitemdesc_get_owner),0,
      "The owner of the item, an apt_pkg.AcquireItem object."},
     {NULL}
 };
@@ -184,7 +184,7 @@ PyTypeObject PyAcquireItemDesc_Type = {
     sizeof(CppPyObject<pkgAcquire::ItemDesc*>),// tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDealloc<pkgAcquire::ItemDesc*>, // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<pkgAcquire::ItemDesc*>), // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -259,19 +259,19 @@ static PyObject *PkgAcquireGetLock(PyObject *Self,PyObject *Args)
 
 
 static PyMethodDef PkgAcquireMethods[] = {
-    {"run",PkgAcquireRun,METH_VARARGS,
+    {"run",APT_NATIVE_CALL(PkgAcquireRun),METH_VARARGS,
      "run() -> int\n\nRun the fetcher and return one of RESULT_CANCELLED,\n"
      "RESULT_CONTINUE, RESULT_FAILED.\n\n"
      "RESULT_CONTINUE means that all items which where queued prior to\n"
      "calling run() have been fetched successfully or failed transiently.\n\n"
      "RESULT_CANCELLED means canceled by the progress class.\n\n"
      "RESULT_FAILED means a generic failure."},
-    {"shutdown",PkgAcquireShutdown, METH_VARARGS,
+    {"shutdown",APT_NATIVE_CALL(PkgAcquireShutdown), METH_VARARGS,
      "shutdown()\n\n"
      "Shut the fetcher down, removing all items from it. Future access to\n"
      "queued AcquireItem objects will cause a segfault. The partial result\n"
      "is kept on the disk and not removed and APT might reuse it."},
-    {"get_lock",PkgAcquireGetLock, METH_VARARGS,
+    {"get_lock",APT_NATIVE_CALL(PkgAcquireGetLock), METH_VARARGS,
      "get_lock(log: str)\n\n"
      "Acquires a log for the given directory, using a file 'lock' in it."},
     {}
@@ -320,16 +320,16 @@ static PyObject *PkgAcquireGetItems(PyObject *Self,void*)
 }
 
 static PyGetSetDef PkgAcquireGetSet[] = {
-    {"fetch_needed",PkgAcquireGetFetchNeeded,0,
+    {"fetch_needed",APT_NATIVE_CALL(PkgAcquireGetFetchNeeded),0,
      "The total amount of data to be fetched (number of bytes)."},
-    {"items",PkgAcquireGetItems,0,
+    {"items",APT_NATIVE_CALL(PkgAcquireGetItems),0,
      "A list of all items as apt_pkg.AcquireItem objects, including already\n"
      "fetched ones and to be fetched ones."},
-    {"workers",PkgAcquireGetWorkers,0,
+    {"workers",APT_NATIVE_CALL(PkgAcquireGetWorkers),0,
      "A list of all active workers as apt_pkg.AcquireWorker objects."},
-    {"partial_present",PkgAcquireGetPartialPresent,0,
+    {"partial_present",APT_NATIVE_CALL(PkgAcquireGetPartialPresent),0,
      "The amount of data which is already available (number of bytes)."},
-    {"total_needed",PkgAcquireGetTotalNeeded,0,
+    {"total_needed",APT_NATIVE_CALL(PkgAcquireGetTotalNeeded),0,
      "The amount of data that needs to fetched plus the amount of data\n"
      "which has already been fetched (number of bytes)."},
     {}
@@ -384,7 +384,7 @@ PyTypeObject PyAcquire_Type = {
     sizeof(CppPyObject<pkgAcquire*>),    // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDeallocPtr<pkgAcquire*>,          // tp_dealloc
+    APT_NATIVE_CALL(CppDeallocPtr<pkgAcquire*>),          // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -396,7 +396,7 @@ PyTypeObject PyAcquire_Type = {
     0,                                   // tp_hash
     0,                                   // tp_call
     0,                                   // tp_str
-    _PyAptObject_getattro,               // tp_getattro
+    APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
     0,                                   // tp_setattro
     0,                                   // tp_as_buffer
     (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -418,7 +418,7 @@ PyTypeObject PyAcquire_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    PkgAcquireNew,                       // tp_new
+    APT_NATIVE_CALL(PkgAcquireNew),                       // tp_new
 };
 
 

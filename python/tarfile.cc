@@ -263,37 +263,37 @@ static PyObject *tarmember_repr(PyObject *self)
 
 
 static PyMethodDef tarmember_methods[] = {
-    {"isblk",tarmember_isblk,METH_NOARGS,
+    {"isblk",APT_NATIVE_CALL(tarmember_isblk),METH_NOARGS,
         "Determine whether the member is a block device."},
-    {"ischr",tarmember_ischr,METH_NOARGS,
+    {"ischr",APT_NATIVE_CALL(tarmember_ischr),METH_NOARGS,
      "Determine whether the member is a character device."},
-    {"isdev",tarmember_isdev,METH_NOARGS,
+    {"isdev",APT_NATIVE_CALL(tarmember_isdev),METH_NOARGS,
      "Determine whether the member is a device (block, character or FIFO)."},
-    {"isdir",tarmember_isdir,METH_NOARGS,
+    {"isdir",APT_NATIVE_CALL(tarmember_isdir),METH_NOARGS,
      "Determine whether the member is a directory."},
-    {"isfifo",tarmember_isfifo,METH_NOARGS,
+    {"isfifo",APT_NATIVE_CALL(tarmember_isfifo),METH_NOARGS,
      "Determine whether the member is a FIFO."},
-    {"isfile",tarmember_isfile,METH_NOARGS,
+    {"isfile",APT_NATIVE_CALL(tarmember_isfile),METH_NOARGS,
      "Determine whether the member is a regular file."},
-    {"islnk",tarmember_islnk,METH_NOARGS,
+    {"islnk",APT_NATIVE_CALL(tarmember_islnk),METH_NOARGS,
      "Determine whether the member is a hardlink."},
-    {"isreg",tarmember_isreg,METH_NOARGS,
+    {"isreg",APT_NATIVE_CALL(tarmember_isreg),METH_NOARGS,
      "Determine whether the member is a regular file, same as isfile()."},
-    {"issym",tarmember_issym,METH_NOARGS,
+    {"issym",APT_NATIVE_CALL(tarmember_issym),METH_NOARGS,
      "Determine whether the member is a symbolic link."},
     {NULL}
 };
 
 static PyGetSetDef tarmember_getset[] = {
-    {"gid",tarmember_get_gid,0,"The owner's group ID."},
-    {"linkname",tarmember_get_linkname,0,"The target of the link."},
-    {"major",tarmember_get_major,0,"The major ID of the device."},
-    {"minor",tarmember_get_minor,0,"The minor ID of the device."},
-    {"mode",tarmember_get_mode,0,"The mode (permissions)."},
-    {"mtime",tarmember_get_mtime,0,"Last time of modification."},
-    {"name",tarmember_get_name,0,"The name of the file."},
-    {"size",tarmember_get_size,0,"The size of the file."},
-    {"uid",tarmember_get_uid,0,"The owner's user ID."},
+    {"gid",APT_NATIVE_CALL(tarmember_get_gid),0,"The owner's group ID."},
+    {"linkname",APT_NATIVE_CALL(tarmember_get_linkname),0,"The target of the link."},
+    {"major",APT_NATIVE_CALL(tarmember_get_major),0,"The major ID of the device."},
+    {"minor",APT_NATIVE_CALL(tarmember_get_minor),0,"The minor ID of the device."},
+    {"mode",APT_NATIVE_CALL(tarmember_get_mode),0,"The mode (permissions)."},
+    {"mtime",APT_NATIVE_CALL(tarmember_get_mtime),0,"Last time of modification."},
+    {"name",APT_NATIVE_CALL(tarmember_get_name),0,"The name of the file."},
+    {"size",APT_NATIVE_CALL(tarmember_get_size),0,"The size of the file."},
+    {"uid",APT_NATIVE_CALL(tarmember_get_uid),0,"The owner's user ID."},
     {NULL}
 };
 
@@ -307,12 +307,12 @@ PyTypeObject PyTarMember_Type = {
     sizeof(CppPyObject<pkgDirStream::Item>),           // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    tarmember_dealloc,                   // tp_dealloc
+    APT_NATIVE_CALL(tarmember_dealloc),                   // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
     0,                                   // tp_compare
-    tarmember_repr,                      // tp_repr
+    APT_NATIVE_CALL(tarmember_repr),                      // tp_repr
     0,                                   // tp_as_number
     0,                                   // tp_as_sequence
     0,                                   // tp_as_mapping
@@ -456,9 +456,9 @@ static PyObject *tarfile_extractdata(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef tarfile_methods[] = {
-    {"extractdata",tarfile_extractdata,METH_VARARGS,tarfile_extractdata_doc},
-    {"extractall",tarfile_extractall,METH_VARARGS,tarfile_extractall_doc},
-    {"go",tarfile_go,METH_VARARGS,tarfile_go_doc},
+    {"extractdata",APT_NATIVE_CALL(tarfile_extractdata),METH_VARARGS,tarfile_extractdata_doc},
+    {"extractall",APT_NATIVE_CALL(tarfile_extractall),METH_VARARGS,tarfile_extractall_doc},
+    {"go",APT_NATIVE_CALL(tarfile_go),METH_VARARGS,tarfile_go_doc},
     {NULL}
 };
 
@@ -483,12 +483,12 @@ PyTypeObject PyTarFile_Type = {
     sizeof(PyTarFileObject),             // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDealloc<ExtractTar*>,        // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<ExtractTar*>),        // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
     0,                                   // tp_compare
-    tarfile_repr,                        // tp_repr
+    APT_NATIVE_CALL(tarfile_repr),                        // tp_repr
     0,                                   // tp_as_number
     0,                                   // tp_as_sequence
     0,                                   // tp_as_mapping
@@ -517,5 +517,5 @@ PyTypeObject PyTarFile_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    tarfile_new                          // tp_new
+    APT_NATIVE_CALL(tarfile_new)                          // tp_new
 };

@@ -609,18 +609,18 @@ static PyObject *PkgDepCachePhasingApplied(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgDepCacheMethods[] =
 {
-   {"init",PkgDepCacheInit,METH_VARARGS,
+   {"init",APT_NATIVE_CALL(PkgDepCacheInit),METH_VARARGS,
     "init(progress: apt.progress.base.OpProgress)\n\n"
     "Initialize the depcache (done automatically when constructing\n"
     "the object)."},
-   {"get_candidate_ver",PkgDepCacheGetCandidateVer,METH_VARARGS,
+   {"get_candidate_ver",APT_NATIVE_CALL(PkgDepCacheGetCandidateVer),METH_VARARGS,
     "get_candidate_ver(pkg: apt_pkg.Package) -> apt_pkg.Version\n\n"
     "Return the candidate version for the package, normally the version\n"
     "with the highest pin (changeable using set_candidate_ver)."},
-   {"set_candidate_ver",PkgDepCacheSetCandidateVer,METH_VARARGS,
+   {"set_candidate_ver",APT_NATIVE_CALL(PkgDepCacheSetCandidateVer),METH_VARARGS,
     "set_candidate_ver(pkg: apt_pkg.Package, ver: apt_pkg.Version) -> bool\n\n"
     "Set the candidate version of 'pkg' to 'ver'."},
-   {"set_candidate_release",PkgDepCacheSetCandidateRelease,METH_VARARGS,
+   {"set_candidate_release",APT_NATIVE_CALL(PkgDepCacheSetCandidateRelease),METH_VARARGS,
     "set_candidate_release(pkg: apt_pkg.Package, ver: apt_pkg.Version, rel: string) -> bool\n\n"
     "Sets not only the candidate version 'ver' for package 'pkg', "
     "but walks also down the dependency tree and checks if it is required "
@@ -628,85 +628,85 @@ static PyMethodDef PkgDepCacheMethods[] =
     "release string 'rel', too."},
 
    // global cache operations
-   {"upgrade",PkgDepCacheUpgrade,METH_VARARGS,
+   {"upgrade",APT_NATIVE_CALL(PkgDepCacheUpgrade),METH_VARARGS,
     "upgrade([dist_upgrade: bool = True]) -> bool\n\n"
     "Mark the packages for upgrade under the same conditions apt-get\n"
     "upgrade does. If 'dist_upgrade' is True, also allow packages to\n"
     "be upgraded if they require installation/removal of other packages;\n"
     "just like apt-get dist-upgrade."},
-   {"fix_broken",PkgDepCacheFixBroken,METH_VARARGS,
+   {"fix_broken",APT_NATIVE_CALL(PkgDepCacheFixBroken),METH_VARARGS,
     "fix_broken() -> bool\n\n"
     "Fix broken packages."},
-   {"read_pinfile",PkgDepCacheReadPinFile,METH_VARARGS,
+   {"read_pinfile",APT_NATIVE_CALL(PkgDepCacheReadPinFile),METH_VARARGS,
     "read_pinfile([file: str])\n\n"
     "Read the pin policy"},
-   {"minimize_upgrade",PkgDepCacheMinimizeUpgrade, METH_VARARGS,
+   {"minimize_upgrade",APT_NATIVE_CALL(PkgDepCacheMinimizeUpgrade), METH_VARARGS,
     "minimize_upgrade() -> bool\n\n"
     "Go over the entire set of packages and try to keep each package\n"
     "marked for upgrade. If a conflict is generated then the package\n"
     "is restored."},
    // Policy
-   {"phasing_applied",PkgDepCachePhasingApplied,METH_VARARGS,
+   {"phasing_applied",APT_NATIVE_CALL(PkgDepCachePhasingApplied),METH_VARARGS,
     "phasing_applied(pkg: apt_pkg.Package) -> bool\n\n"
     "Check if the phased update is ready.\n"
     "return false if this is a phased update that is not yet ready for us.\n"},
    // Manipulators
-   {"mark_keep",PkgDepCacheMarkKeep,METH_VARARGS,
+   {"mark_keep",APT_NATIVE_CALL(PkgDepCacheMarkKeep),METH_VARARGS,
     "mark_keep(pkg: apt_pkg.Package)\n\n"
     "Mark package to be kept."},
-   {"mark_delete",PkgDepCacheMarkDelete,METH_VARARGS,
+   {"mark_delete",APT_NATIVE_CALL(PkgDepCacheMarkDelete),METH_VARARGS,
     "mark_delete(pkg: apt_pkg.Package[, purge: bool = False])\n\n"
     "Mark package for deletion, and if 'purge' is True also for purging."},
-   {"mark_install",PkgDepCacheMarkInstall,METH_VARARGS,
+   {"mark_install",APT_NATIVE_CALL(PkgDepCacheMarkInstall),METH_VARARGS,
     "mark_install(pkg: apt_pkg.Package[, auto_inst=True, from_user=True])\n\n"
     "Mark the package for installation. The parameter 'auto_inst' controls\n"
     "whether the dependencies of the package are marked for installation\n"
     "as well. The parameter 'from_user' controls whether the package is\n"
     "registered as NOT automatically installed."},
-   {"mark_auto",PkgDepCacheMarkAuto,METH_VARARGS,
+   {"mark_auto",APT_NATIVE_CALL(PkgDepCacheMarkAuto),METH_VARARGS,
     "mark_auto(pkg: apt_pkg.Package, auto: bool)\n\n"
     "Mark package as automatically installed (if auto=True),\n"
     "or as not automatically installed (if auto=False)."},
-   {"set_reinstall",PkgDepCacheSetReInstall,METH_VARARGS,
+   {"set_reinstall",APT_NATIVE_CALL(PkgDepCacheSetReInstall),METH_VARARGS,
     "set_reinstall(pkg: apt_pkg.Package, reinstall: bool)\n\n"
     "Set whether the package should be reinstalled (reinstall = True or False)."},
    // state information
-   {"is_upgradable",PkgDepCacheIsUpgradable,METH_VARARGS,
+   {"is_upgradable",APT_NATIVE_CALL(PkgDepCacheIsUpgradable),METH_VARARGS,
     "is_upgradable(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is upgradable."},
-   {"is_now_broken",PkgDepCacheIsNowBroken,METH_VARARGS,
+   {"is_now_broken",APT_NATIVE_CALL(PkgDepCacheIsNowBroken),METH_VARARGS,
     "is_now_broken(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is broken, taking marked changes into account."},
-   {"is_inst_broken",PkgDepCacheIsInstBroken,METH_VARARGS,
+   {"is_inst_broken",APT_NATIVE_CALL(PkgDepCacheIsInstBroken),METH_VARARGS,
     "is_inst_broken(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is broken, ignoring marked changes."},
-   {"is_garbage",PkgDepCacheIsGarbage,METH_VARARGS,
+   {"is_garbage",APT_NATIVE_CALL(PkgDepCacheIsGarbage),METH_VARARGS,
     "is_garbage(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is garbage, i.e. whether it is automatically\n"
     "installed and the reverse dependencies are not installed anymore."},
-   {"is_auto_installed",PkgDepCacheIsAutoInstalled,METH_VARARGS,
+   {"is_auto_installed",APT_NATIVE_CALL(PkgDepCacheIsAutoInstalled),METH_VARARGS,
     "is_auto_installed(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked as automatically installed."},
-   {"marked_install",PkgDepCacheMarkedInstall,METH_VARARGS,
+   {"marked_install",APT_NATIVE_CALL(PkgDepCacheMarkedInstall),METH_VARARGS,
     "marked_install(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked for installation."},
-   {"marked_upgrade",PkgDepCacheMarkedUpgrade,METH_VARARGS,
+   {"marked_upgrade",APT_NATIVE_CALL(PkgDepCacheMarkedUpgrade),METH_VARARGS,
     "marked_upgrade(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked for upgrade."},
-   {"marked_delete",PkgDepCacheMarkedDelete,METH_VARARGS,
+   {"marked_delete",APT_NATIVE_CALL(PkgDepCacheMarkedDelete),METH_VARARGS,
     "marked_delete(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked for removal."},
-   {"marked_keep",PkgDepCacheMarkedKeep,METH_VARARGS,
+   {"marked_keep",APT_NATIVE_CALL(PkgDepCacheMarkedKeep),METH_VARARGS,
     "marked_keep(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package should be kept."},
-   {"marked_reinstall",PkgDepCacheMarkedReinstall,METH_VARARGS,
+   {"marked_reinstall",APT_NATIVE_CALL(PkgDepCacheMarkedReinstall),METH_VARARGS,
     "marked_reinstall(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked for re-installation."},
-   {"marked_downgrade",PkgDepCacheMarkedDowngrade,METH_VARARGS,
+   {"marked_downgrade",APT_NATIVE_CALL(PkgDepCacheMarkedDowngrade),METH_VARARGS,
     "marked_downgrade(pkg: apt_pkg.Package) -> bool\n\n"
     "Check whether the package is marked for downgrade."},
    // Action
-   {"commit", PkgDepCacheCommit, METH_VARARGS,
+   {"commit", APT_NATIVE_CALL(PkgDepCacheCommit), METH_VARARGS,
     "commit(acquire_progress, install_progress)\n\n"
     "Commit all the marked changes. This method takes two arguments,\n"
     "'acquire_progress' takes an apt.progress.base.AcquireProgress\n"
@@ -749,22 +749,22 @@ static PyObject *PkgDepCacheGetPolicy(PyObject *Self,void*) {
 
 
 static PyGetSetDef PkgDepCacheGetSet[] = {
-    {"broken_count",PkgDepCacheGetBrokenCount,0,
+    {"broken_count",APT_NATIVE_CALL(PkgDepCacheGetBrokenCount),0,
      "The number of packages with broken dependencies in the cache."},
-    {"deb_size",PkgDepCacheGetDebSize,0,
+    {"deb_size",APT_NATIVE_CALL(PkgDepCacheGetDebSize),0,
      "The size of the packages which are needed for the changes to be\n"
      "applied."},
-    {"del_count",PkgDepCacheGetDelCount,0,
+    {"del_count",APT_NATIVE_CALL(PkgDepCacheGetDelCount),0,
      "The number of packages marked for removal."},
-    {"inst_count",PkgDepCacheGetInstCount,0,
+    {"inst_count",APT_NATIVE_CALL(PkgDepCacheGetInstCount),0,
      "The number of packages marked for installation."},
-    {"keep_count",PkgDepCacheGetKeepCount,0,
+    {"keep_count",APT_NATIVE_CALL(PkgDepCacheGetKeepCount),0,
      "The number of packages marked for keep."},
-    {"usr_size",PkgDepCacheGetUsrSize,0,
+    {"usr_size",APT_NATIVE_CALL(PkgDepCacheGetUsrSize),0,
      "The amount of space required for installing/removing the packages,\n"
      "i.e. the Installed-Size of all packages marked for installation\n"
      "minus the Installed-Size of all packages for removal."},
-    {"policy",PkgDepCacheGetPolicy,0,
+    {"policy",APT_NATIVE_CALL(PkgDepCacheGetPolicy),0,
      "The apt_pkg.Policy object used by this cache."},
     {}
 };
@@ -804,7 +804,7 @@ PyTypeObject PyDepCache_Type =
    sizeof(CppPyObject<pkgDepCache *>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgDepCache *>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgDepCache *>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -816,7 +816,7 @@ PyTypeObject PyDepCache_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -839,7 +839,7 @@ PyTypeObject PyDepCache_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgDepCacheNew,                      // tp_new
+   APT_NATIVE_CALL(PkgDepCacheNew),                      // tp_new
 };
 
 
@@ -959,27 +959,27 @@ static PyObject *PkgProblemResolverKeepPhasedUpdates(PyObject *Self,PyObject *Ar
 static PyMethodDef PkgProblemResolverMethods[] =
 {
    // config
-   {"protect", PkgProblemResolverProtect, METH_VARARGS,
+   {"protect", APT_NATIVE_CALL(PkgProblemResolverProtect), METH_VARARGS,
     "protect(pkg: apt_pkg.Package)\n\n"
     "Mark the package as protected in the resolver, meaning that its\n"
     "state will not be changed."},
-   {"remove", PkgProblemResolverRemove, METH_VARARGS,
+   {"remove", APT_NATIVE_CALL(PkgProblemResolverRemove), METH_VARARGS,
     "remove(pkg: apt_pkg.Package)\n\n"
     "Mark the package for removal in the resolver."},
-   {"clear", PkgProblemResolverClear, METH_VARARGS,
+   {"clear", APT_NATIVE_CALL(PkgProblemResolverClear), METH_VARARGS,
     "clear(pkg: apt_pkg.Package)\n\n"
     "Revert the actions done by protect()/remove() on the package."},
 
    // Actions
-   {"resolve", PkgProblemResolverResolve, METH_VARARGS,
+   {"resolve", APT_NATIVE_CALL(PkgProblemResolverResolve), METH_VARARGS,
     "resolve([fix_broken: bool = True]) -> bool\n\n"
     "Try to intelligently resolve problems by installing and removing\n"
     "packages. If 'fix_broken' is True, apt will try to repair broken\n"
     "dependencies of installed packages."},
-   {"resolve_by_keep", PkgProblemResolverResolveByKeep, METH_VARARGS,
+   {"resolve_by_keep", APT_NATIVE_CALL(PkgProblemResolverResolveByKeep), METH_VARARGS,
     "resolve_by_keep() -> bool\n\n"
     "Try to resolve problems only by using keep."},
-   {"keep_phased_updates", PkgProblemResolverKeepPhasedUpdates, METH_VARARGS,
+   {"keep_phased_updates", APT_NATIVE_CALL(PkgProblemResolverKeepPhasedUpdates), METH_VARARGS,
     "keep_phased_updates() -> bool\n\n"
     "Hold back upgrades to phased versions of already installed\n"
     "packages, unless they are security updates."},
@@ -998,7 +998,7 @@ PyTypeObject PyProblemResolver_Type =
    sizeof(CppPyObject<pkgProblemResolver *>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgProblemResolver *>,// tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgProblemResolver *>),// tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -1010,7 +1010,7 @@ PyTypeObject PyProblemResolver_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -1033,7 +1033,7 @@ PyTypeObject PyProblemResolver_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgProblemResolverNew,               // tp_new
+   APT_NATIVE_CALL(PkgProblemResolverNew),               // tp_new
 };
 
 									/*}}}*/
@@ -1079,9 +1079,9 @@ static PyObject *PkgActionGroupExit(PyObject *Self,PyObject *Args) {
 
 static PyMethodDef PkgActionGroupMethods[] =
 {
-   {"release", PkgActionGroupRelease, METH_VARARGS, actiongroup_release_doc},
-   {"__enter__", PkgActionGroupEnter, METH_VARARGS, actiongroup__enter__doc},
-   {"__exit__", PkgActionGroupExit, METH_VARARGS, actiongroup__exit__doc},
+   {"release", APT_NATIVE_CALL(PkgActionGroupRelease), METH_VARARGS, actiongroup_release_doc},
+   {"__enter__", APT_NATIVE_CALL(PkgActionGroupEnter), METH_VARARGS, actiongroup__enter__doc},
+   {"__exit__", APT_NATIVE_CALL(PkgActionGroupExit), METH_VARARGS, actiongroup__exit__doc},
    {}
 };
 
@@ -1126,7 +1126,7 @@ PyTypeObject PyActionGroup_Type =
    sizeof(CppPyObject<pkgDepCache::ActionGroup*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgDepCache::ActionGroup*>,        // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgDepCache::ActionGroup*>),        // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -1161,7 +1161,7 @@ PyTypeObject PyActionGroup_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgActionGroupNew,                   // tp_new
+   APT_NATIVE_CALL(PkgActionGroupNew),                   // tp_new
 };
 
 

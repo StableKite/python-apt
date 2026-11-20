@@ -82,18 +82,18 @@ static PyObject *PkgManagerFixMissing(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgManagerMethods[] =
 {
-   {"get_archives",PkgManagerGetArchives,METH_VARARGS,
+   {"get_archives",APT_NATIVE_CALL(PkgManagerGetArchives),METH_VARARGS,
     "get_archives(fetcher: Acquire, list: SourceList, recs: PackageRecords) -> bool\n\n"
     "Download the packages marked for installation via the Acquire object\n"
     "'fetcher', using the information found in 'list' and 'recs'."},
-   {"do_install",(PyCFunction) PkgManagerDoInstall,METH_VARARGS|METH_KEYWORDS,
+   {"do_install",(PyCFunction) APT_NATIVE_CALL(PkgManagerDoInstall),METH_VARARGS|METH_KEYWORDS,
     "do_install(status_fd: int, progress: PackageManagerProgress) -> int\n\n"
     "Install the packages and return one of the class constants\n"
     "RESULT_COMPLETED, RESULT_FAILED, RESULT_INCOMPLETE. The argument\n"
     "status_fd can be used to specify a file descriptor that APT will\n"
     "write status information on (see README.progress-reporting in the\n"
     "apt source code for information on what will be written there)."},
-   {"fix_missing",PkgManagerFixMissing,METH_VARARGS,
+   {"fix_missing",APT_NATIVE_CALL(PkgManagerFixMissing),METH_VARARGS,
     "fix_missing() -> bool\n\n"
     "Fix the installation if a package could not be downloaded."},
    {}
@@ -112,7 +112,7 @@ PyTypeObject PyPackageManager_Type =
    sizeof(CppPyObject<pkgPackageManager*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<pkgPackageManager*>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgPackageManager*>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -124,7 +124,7 @@ PyTypeObject PyPackageManager_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                 // tp_flag,
@@ -302,23 +302,23 @@ static PyObject *PkgManagerReset(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgManager2Methods[] =
 {
-   {"install",PkgManagerInstall,METH_VARARGS,   
+   {"install",APT_NATIVE_CALL(PkgManagerInstall),METH_VARARGS,
     "install(pkg: Package, filename: str) -> bool \n\n"
     "Add a install action. Can be overridden in subclasses.\n\n"
     "New in version 0.8.0."},
-   {"configure",PkgManagerConfigure,METH_VARARGS,
+   {"configure",APT_NATIVE_CALL(PkgManagerConfigure),METH_VARARGS,
     "configure(pkg: Package) -> bool \n\n"
     "Add a configure action. Can be overridden in subclasses.\n\n"
     "New in version 0.8.0."},
-   {"remove",PkgManagerRemove,METH_VARARGS,
+   {"remove",APT_NATIVE_CALL(PkgManagerRemove),METH_VARARGS,
     "remove(pkg: Package, purge: bool) -> bool \n\n"
     "Add a removal action. Can be overridden in subclasses.\n\n"
     "New in version 0.8.0."},
-   {"go",PkgManagerGo,METH_VARARGS,
+   {"go",APT_NATIVE_CALL(PkgManagerGo),METH_VARARGS,
     "go(status_fd: int) -> bool \n\n"
     "Start dpkg. Can be overridden in subclasses.\n\n"
     "New in version 0.8.0."},
-   {"reset",PkgManagerReset,METH_VARARGS,
+   {"reset",APT_NATIVE_CALL(PkgManagerReset),METH_VARARGS,
     "reset()\n\n"
     "Reset the package manager for a new round.\n"
     "Can be overridden in subclasses.\n\n"
@@ -341,7 +341,7 @@ PyTypeObject PyPackageManager2_Type =
    sizeof(CppPyObject<PyPkgManager*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDeallocPtr<PyPkgManager*>,        // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<PyPkgManager*>),        // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -375,7 +375,7 @@ PyTypeObject PyPackageManager2_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgManagerNew,                       // tp_new
+   APT_NATIVE_CALL(PkgManagerNew),                       // tp_new
 };
 
 

@@ -96,8 +96,8 @@ static PyObject *group_find_preferred_package(PyObject *self,PyObject *args,
 }
 
 static PyMethodDef group_methods[] = {
-    {"find_package",group_find_package,METH_VARARGS,group_find_package_doc},
-    {"find_preferred_package",(PyCFunction) group_find_preferred_package,
+    {"find_package",APT_NATIVE_CALL(group_find_package),METH_VARARGS,group_find_package_doc},
+    {"find_preferred_package",(PyCFunction) APT_NATIVE_CALL(group_find_preferred_package),
      METH_VARARGS|METH_KEYWORDS,group_find_preferred_package_doc},
     {}
 };
@@ -132,7 +132,7 @@ static PySequenceMethods group_as_sequence =
    0,
    0,                // concat
    0,                // repeat
-   group_seq_item,
+   APT_NATIVE_CALL(group_seq_item),
    0,                // slice
    0,                // assign item
    0                 // assign slice
@@ -151,7 +151,7 @@ PyTypeObject PyGroup_Type = {
     sizeof(PyGroup),                     // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDealloc<pkgCache::GrpIterator>,   // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<pkgCache::GrpIterator>),   // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -184,5 +184,5 @@ PyTypeObject PyGroup_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    group_new,                           // tp_new
+    APT_NATIVE_CALL(group_new),                           // tp_new
 };

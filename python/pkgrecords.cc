@@ -49,7 +49,7 @@ static PyObject *PkgRecordsLookup(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgRecordsMethods[] =
 {
-   {"lookup",PkgRecordsLookup,METH_VARARGS,
+   {"lookup",APT_NATIVE_CALL(PkgRecordsLookup),METH_VARARGS,
     "lookup((packagefile: apt_pkg.PackageFile, index: int)) -> bool\n\n"
     "Changes to a new package"},
    {}
@@ -146,34 +146,34 @@ static PyObject *PkgRecordsGetRecord(PyObject *Self,void*) {
    return PyString_FromStringAndSize(start,stop-start);
 }
 static PyGetSetDef PkgRecordsGetSet[] = {
-   {"filename",PkgRecordsGetFileName,0,
+   {"filename",APT_NATIVE_CALL(PkgRecordsGetFileName),0,
     "The filename of the package, as stored in the 'Filename' field."},
-   {"homepage",PkgRecordsGetHomepage,0,
+   {"homepage",APT_NATIVE_CALL(PkgRecordsGetHomepage),0,
     "The homepage of the package, as stored in the 'Homepage' field."},
-   {"long_desc",PkgRecordsGetLongDesc,0,
+   {"long_desc",APT_NATIVE_CALL(PkgRecordsGetLongDesc),0,
     "The long description of the packages; i.e. all lines in the\n"
     "'Description' field except for the first one."},
-   {"hashes",PkgRecordsGetHashes,0,
+   {"hashes",APT_NATIVE_CALL(PkgRecordsGetHashes),0,
     "The hashes of the packages, as a HashStringList"},
-   {"md5_hash",PkgRecordsGetMD5Hash,0,
+   {"md5_hash",APT_NATIVE_CALL(PkgRecordsGetMD5Hash),0,
     "The MD5 hash value of the package, as stored in the 'MD5Sum' field."},
-   {"maintainer",PkgRecordsGetMaintainer,0,
+   {"maintainer",APT_NATIVE_CALL(PkgRecordsGetMaintainer),0,
     "The maintainer of the package, as stored in the 'Maintainer' field."},
-   {"name",PkgRecordsGetName,0,
+   {"name",APT_NATIVE_CALL(PkgRecordsGetName),0,
     "The name of the package, as stored in the 'Package' field."},
-   {"record",PkgRecordsGetRecord,0,
+   {"record",APT_NATIVE_CALL(PkgRecordsGetRecord),0,
     "The raw record, suitable for parsing by apt_pkg.TagSection."},
-   {"sha1_hash",PkgRecordsGetSHA1Hash,0,
+   {"sha1_hash",APT_NATIVE_CALL(PkgRecordsGetSHA1Hash),0,
     "The SHA1 hash value, as stored in the 'SHA1' field."},
-   {"sha256_hash",PkgRecordsGetSHA256Hash,0,
+   {"sha256_hash",APT_NATIVE_CALL(PkgRecordsGetSHA256Hash),0,
     "The SHA256 hash value, as stored in the 'SHA256' field."},
-   {"short_desc",PkgRecordsGetShortDesc,0,
+   {"short_desc",APT_NATIVE_CALL(PkgRecordsGetShortDesc),0,
     "The short description of the package, i.e. the first line of the\n"
     "'Description' field."},
-   {"source_pkg",PkgRecordsGetSourcePkg,0,
+   {"source_pkg",APT_NATIVE_CALL(PkgRecordsGetSourcePkg),0,
     "The name of the source package, if different from the name of the\n"
     "binary package. This information is retrieved from the 'Source' field."},
-   {"source_ver",PkgRecordsGetSourceVer,0,
+   {"source_ver",APT_NATIVE_CALL(PkgRecordsGetSourceVer),0,
     "The version of the source package, if it differs from the version\n"
     "of the binary package. Just like 'source_pkg', this information\n"
     "is retrieved from the 'Source' field."},
@@ -208,8 +208,8 @@ static PyObject *PkgRecordsMap(PyObject *Self,PyObject *Arg)
 
 
 
-PySequenceMethods PkgRecordsSeqMeth = {0,0,0,0,0,0,0,PkgRecordsContains,0,0};
-PyMappingMethods PkgRecordsMapMeth = {0,PkgRecordsMap,0};
+PySequenceMethods PkgRecordsSeqMeth = {0,0,0,0,0,0,0,APT_NATIVE_CALL(PkgRecordsContains),0,0};
+PyMappingMethods PkgRecordsMapMeth = {0,APT_NATIVE_CALL(PkgRecordsMap),0};
 
 static PyObject *PkgRecordsNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 {
@@ -237,7 +237,7 @@ PyTypeObject PyPackageRecords_Type =
    sizeof(CppPyObject<PkgRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<PkgRecordsStruct>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<PkgRecordsStruct>),   // tp_dealloc
    0,                                   // tp_print
    0,                                    // tp_getattr
    0,                                   // tp_setattr
@@ -249,7 +249,7 @@ PyTypeObject PyPackageRecords_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -272,7 +272,7 @@ PyTypeObject PyPackageRecords_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgRecordsNew,                       // tp_new
+   APT_NATIVE_CALL(PkgRecordsNew),                       // tp_new
 };
 
 									/*}}}*/

@@ -47,7 +47,7 @@ static PyObject* pkgSrcRecordFiles_item(PyObject *Self, Py_ssize_t i) {
 }
 
 static PySequenceMethods pkgsrcrecordfiles_as_sequence = {
-   pkgSrcRecordFiles_length,0,0,pkgSrcRecordFiles_item,0,0,0,0,0,0
+   APT_NATIVE_CALL(pkgSrcRecordFiles_length),0,0,APT_NATIVE_CALL(pkgSrcRecordFiles_item),0,0,0,0,0,0
 };
 
 static PyObject *PkgSrcRecordFilesNew(PyTypeObject *type,PyObject *args,PyObject *kwds) {
@@ -85,13 +85,13 @@ static PyObject *PkgSrcRecordFilesGetHashes(PyObject *Self,void*) {
 }
 
 static PyGetSetDef PkgSrcRecordFilesGetSet[] = {
-   {"path",PkgSrcRecordFilesGetPath,0,
+   {"path",APT_NATIVE_CALL(PkgSrcRecordFilesGetPath),0,
     "The remote path of the source package file."},
-   {"type",PkgSrcRecordFilesGetType,0,
+   {"type",APT_NATIVE_CALL(PkgSrcRecordFilesGetType),0,
     "The type of the source package file."},
-   {"size",PkgSrcRecordFilesGetSize,0,
+   {"size",APT_NATIVE_CALL(PkgSrcRecordFilesGetSize),0,
     "The size of the source package file."},
-   {"hashes",PkgSrcRecordFilesGetHashes,0,
+   {"hashes",APT_NATIVE_CALL(PkgSrcRecordFilesGetHashes),0,
     "The hashes of the source package file."},
    {}
 };
@@ -103,7 +103,7 @@ PyTypeObject PySourceRecordFiles_Type =
    sizeof(CppPyObject<PkgSrcRecordFilesStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<PkgSrcRecordFilesStruct>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<PkgSrcRecordFilesStruct>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -115,7 +115,7 @@ PyTypeObject PySourceRecordFiles_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -137,7 +137,7 @@ PyTypeObject PySourceRecordFiles_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgSrcRecordFilesNew,                         // tp_new
+   APT_NATIVE_CALL(PkgSrcRecordFilesNew),                         // tp_new
 };
 // ---------------------------------------------------------------------
 
@@ -226,9 +226,9 @@ static PyObject *PkgSrcRecordsStep(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgSrcRecordsMethods[] =
 {
-   {"lookup",PkgSrcRecordsLookup,METH_VARARGS,doc_PkgSrcRecordsLookup},
-   {"restart",PkgSrcRecordsRestart,METH_VARARGS,doc_PkgSrcRecordsRestart},
-   {"step",PkgSrcRecordsStep,METH_VARARGS,doc_PkgSrcRecordsStep},
+   {"lookup",APT_NATIVE_CALL(PkgSrcRecordsLookup),METH_VARARGS,doc_PkgSrcRecordsLookup},
+   {"restart",APT_NATIVE_CALL(PkgSrcRecordsRestart),METH_VARARGS,doc_PkgSrcRecordsRestart},
+   {"step",APT_NATIVE_CALL(PkgSrcRecordsStep),METH_VARARGS,doc_PkgSrcRecordsStep},
    {}
 };
 
@@ -353,25 +353,25 @@ static PyObject *PkgSrcRecordsGetBuildDepends(PyObject *Self,void*) {
 
 
 static PyGetSetDef PkgSrcRecordsGetSet[] = {
-   {"binaries",PkgSrcRecordsGetBinaries,0,
+   {"binaries",APT_NATIVE_CALL(PkgSrcRecordsGetBinaries),0,
     "A list of the names of the binaries produced by this source package."},
-   {"build_depends",PkgSrcRecordsGetBuildDepends,0,
+   {"build_depends",APT_NATIVE_CALL(PkgSrcRecordsGetBuildDepends),0,
     "A dictionary describing the build-time dependencies of the package;\n"
     "the format is the same as used for apt_pkg.Version.depends_list_str."},
-   {"files",PkgSrcRecordsGetFiles,0,
+   {"files",APT_NATIVE_CALL(PkgSrcRecordsGetFiles),0,
     "A list of :class:`SourceRecordFiles` objects."},
-   {"index",PkgSrcRecordsGetIndex,0,
+   {"index",APT_NATIVE_CALL(PkgSrcRecordsGetIndex),0,
     "The index file associated with this record as a list of\n"
     "apt_pkg.IndexFile objects."},
-   {"maintainer",PkgSrcRecordsGetMaintainer,0,
+   {"maintainer",APT_NATIVE_CALL(PkgSrcRecordsGetMaintainer),0,
     "The maintainer of the package."},
-   {"package",PkgSrcRecordsGetPackage,0,
+   {"package",APT_NATIVE_CALL(PkgSrcRecordsGetPackage),0,
     "The name of the source package."},
-   {"record",PkgSrcRecordsGetRecord,0,
+   {"record",APT_NATIVE_CALL(PkgSrcRecordsGetRecord),0,
     "The raw record, suitable for parsing using apt_pkg.TagSection."},
-   {"section",PkgSrcRecordsGetSection,0,
+   {"section",APT_NATIVE_CALL(PkgSrcRecordsGetSection),0,
     "The section of the source package."},
-   {"version",PkgSrcRecordsGetVersion,0,
+   {"version",APT_NATIVE_CALL(PkgSrcRecordsGetVersion),0,
     "The version of the source package."},
    {}
 };
@@ -396,7 +396,7 @@ PyTypeObject PySourceRecords_Type =
    sizeof(CppPyObject<PkgSrcRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<PkgSrcRecordsStruct>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDealloc<PkgSrcRecordsStruct>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -408,7 +408,7 @@ PyTypeObject PySourceRecords_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -430,7 +430,7 @@ PyTypeObject PySourceRecords_Type =
    0,                                   // tp_dictoffset
    0,                                   // tp_init
    0,                                   // tp_alloc
-   PkgSrcRecordsNew,                         // tp_new
+   APT_NATIVE_CALL(PkgSrcRecordsNew),                         // tp_new
 };
 
 

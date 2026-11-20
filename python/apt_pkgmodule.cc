@@ -552,7 +552,7 @@ static char *doc_GetLock =
 "get_lock() to return -1 or raise an Error (if 'errors' is True).\n\n"
 "From Python 2.6 on, it is recommended to use the context manager\n"
 "provided by apt_pkg.FileLock instead using the with-statement.";
-static PyObject *GetLock(PyObject *Self,PyObject *Args)
+static PyObject *PyGetLock(PyObject *Self,PyObject *Args)
 {
    PyApt_Filename file;
    char errors = false;
@@ -653,96 +653,96 @@ static PyObject *PkgSystemIsLocked(PyObject *Self,PyObject *Args)
 static PyMethodDef methods[] =
 {
    // Constructors
-   {"init",Init,METH_VARARGS,doc_Init},
-   {"init_config",InitConfig,METH_VARARGS,doc_InitConfig},
-   {"init_system",InitSystem,METH_VARARGS,doc_InitSystem},
+   {"init",APT_NATIVE_CALL(Init),METH_VARARGS,doc_Init},
+   {"init_config",APT_NATIVE_CALL(InitConfig),METH_VARARGS,doc_InitConfig},
+   {"init_system",APT_NATIVE_CALL(InitSystem),METH_VARARGS,doc_InitSystem},
 
    // Internationalization.
-   {"gettext",py_gettext,METH_VARARGS,
+   {"gettext",APT_NATIVE_CALL(py_gettext),METH_VARARGS,
     "gettext(msg: str[, domain: str = 'python-apt']) -> str\n\n"
     "Translate the given string. This is much faster than Python's version\n"
     "and only does translations after setlocale() has been called."},
 
    // Tag File
 
-   {"open_maybe_clear_signed_file",PyOpenMaybeClearSignedFile,METH_VARARGS,
+   {"open_maybe_clear_signed_file",APT_NATIVE_CALL(PyOpenMaybeClearSignedFile),METH_VARARGS,
     doc_OpenMaybeClearSignedFile},
 
    // Locking
-   {"get_lock",GetLock,METH_VARARGS,doc_GetLock},
-   {"pkgsystem_lock",PkgSystemLock,METH_VARARGS,doc_PkgSystemLock},
-   {"pkgsystem_unlock",PkgSystemUnLock,METH_VARARGS,doc_PkgSystemUnLock},
-   {"pkgsystem_lock_inner",PkgSystemLockInner,METH_VARARGS,doc_PkgSystemLockInner},
-   {"pkgsystem_unlock_inner",PkgSystemUnLockInner,METH_VARARGS,doc_PkgSystemUnLockInner},
-   {"pkgsystem_is_locked",PkgSystemIsLocked,METH_VARARGS,doc_PkgSystemIsLocked},
+   {"get_lock",APT_NATIVE_CALL(PyGetLock),METH_VARARGS,doc_GetLock},
+   {"pkgsystem_lock",APT_NATIVE_CALL(PkgSystemLock),METH_VARARGS,doc_PkgSystemLock},
+   {"pkgsystem_unlock",APT_NATIVE_CALL(PkgSystemUnLock),METH_VARARGS,doc_PkgSystemUnLock},
+   {"pkgsystem_lock_inner",APT_NATIVE_CALL(PkgSystemLockInner),METH_VARARGS,doc_PkgSystemLockInner},
+   {"pkgsystem_unlock_inner",APT_NATIVE_CALL(PkgSystemUnLockInner),METH_VARARGS,doc_PkgSystemUnLockInner},
+   {"pkgsystem_is_locked",APT_NATIVE_CALL(PkgSystemIsLocked),METH_VARARGS,doc_PkgSystemIsLocked},
 
    // Command line
-   {"read_config_file",LoadConfig,METH_VARARGS,doc_LoadConfig},
-   {"read_config_dir",LoadConfigDir,METH_VARARGS,doc_LoadConfigDir},
-   {"read_config_file_isc",LoadConfigISC,METH_VARARGS,doc_LoadConfig},
-   {"parse_commandline",ParseCommandLine,METH_VARARGS,doc_ParseCommandLine},
+   {"read_config_file",APT_NATIVE_CALL(LoadConfig),METH_VARARGS,doc_LoadConfig},
+   {"read_config_dir",APT_NATIVE_CALL(LoadConfigDir),METH_VARARGS,doc_LoadConfigDir},
+   {"read_config_file_isc",APT_NATIVE_CALL(LoadConfigISC),METH_VARARGS,doc_LoadConfig},
+   {"parse_commandline",APT_NATIVE_CALL(ParseCommandLine),METH_VARARGS,doc_ParseCommandLine},
 
    // Versioning
-   {"version_compare",VersionCompare,METH_VARARGS,doc_VersionCompare},
-   {"check_dep",CheckDep,METH_VARARGS,doc_CheckDep},
-   {"upstream_version",UpstreamVersion,METH_VARARGS,doc_UpstreamVersion},
+   {"version_compare",APT_NATIVE_CALL(VersionCompare),METH_VARARGS,doc_VersionCompare},
+   {"check_dep",APT_NATIVE_CALL(CheckDep),METH_VARARGS,doc_CheckDep},
+   {"upstream_version",APT_NATIVE_CALL(UpstreamVersion),METH_VARARGS,doc_UpstreamVersion},
 
    // Depends
-   {"parse_depends",reinterpret_cast<PyCFunction>(static_cast<PyCFunctionWithKeywords>(ParseDepends)),METH_VARARGS|METH_KEYWORDS,doc_ParseDepends},
-   {"parse_src_depends",reinterpret_cast<PyCFunction>(static_cast<PyCFunctionWithKeywords>(ParseSrcDepends)),METH_VARARGS|METH_KEYWORDS,parse_src_depends_doc},
+   {"parse_depends",reinterpret_cast<PyCFunction>(static_cast<PyCFunctionWithKeywords>(APT_NATIVE_CALL(ParseDepends))),METH_VARARGS|METH_KEYWORDS,doc_ParseDepends},
+   {"parse_src_depends",reinterpret_cast<PyCFunction>(static_cast<PyCFunctionWithKeywords>(APT_NATIVE_CALL(ParseSrcDepends))),METH_VARARGS|METH_KEYWORDS,parse_src_depends_doc},
 
    // Hashes
-   {"md5sum",md5sum,METH_VARARGS,doc_md5sum},
-   {"sha1sum",sha1sum,METH_VARARGS,doc_sha1sum},
-   {"sha256sum",sha256sum,METH_VARARGS,doc_sha256sum},
-   {"sha512sum",sha512sum,METH_VARARGS,doc_sha512sum},
+   {"md5sum",APT_NATIVE_CALL(md5sum),METH_VARARGS,doc_md5sum},
+   {"sha1sum",APT_NATIVE_CALL(sha1sum),METH_VARARGS,doc_sha1sum},
+   {"sha256sum",APT_NATIVE_CALL(sha256sum),METH_VARARGS,doc_sha256sum},
+   {"sha512sum",APT_NATIVE_CALL(sha512sum),METH_VARARGS,doc_sha512sum},
 
    // multiarch
-   {"get_architectures", GetArchitectures, METH_VARARGS, doc_GetArchitectures},
+   {"get_architectures", APT_NATIVE_CALL(GetArchitectures), METH_VARARGS, doc_GetArchitectures},
 
    // Strings
-   {"check_domain_list",StrCheckDomainList,METH_VARARGS,
+   {"check_domain_list",APT_NATIVE_CALL(StrCheckDomainList),METH_VARARGS,
     "check_domain_list(host: str, domains: str) -> bool\n\n"
     "Check if the host given by 'host' belongs to one of the domains\n"
     "specified in the comma separated string 'domains'. An example\n"
     "would be:\n\n"
     "    check_domain_list('alioth.debian.org','debian.net,debian.org')\n\n"
     "which would return True because alioth belongs to debian.org."},
-   {"quote_string",StrQuoteString,METH_VARARGS,
+   {"quote_string",APT_NATIVE_CALL(StrQuoteString),METH_VARARGS,
     "quote_string(string: str, repl: str) -> str\n\n"
     "Escape the string 'string', replacing any character not allowed in a URL"
     "or specified by 'repl' with its ASCII value preceded by a percent sign"
     "(so for example ' ' becomes '%20')."},
-   {"dequote_string",StrDeQuote,METH_VARARGS,
+   {"dequote_string",APT_NATIVE_CALL(StrDeQuote),METH_VARARGS,
     "dequote_string(string: str) -> str\n\n"
     "Dequote the given string by replacing all HTTP encoded values such\n"
     "as '%20' with their decoded value (in this case, ' ')."},
-   {"size_to_str",StrSizeToStr,METH_VARARGS,
+   {"size_to_str",APT_NATIVE_CALL(StrSizeToStr),METH_VARARGS,
     "size_to_str(bytes: int) -> str\n\n"
     "Return a string describing the size in a human-readable manner using\n"
     "SI prefix and base-10 units, e.g. '1k' for 1000, '1M' for 1000000, etc."},
-   {"time_to_str",StrTimeToStr,METH_VARARGS,
+   {"time_to_str",APT_NATIVE_CALL(StrTimeToStr),METH_VARARGS,
     "time_to_str(seconds: int) -> str\n\n"
     "Return a string describing the number of seconds in a human\n"
     "readable manner using days, hours, minutes and seconds."},
-   {"uri_to_filename",StrURItoFileName,METH_VARARGS,
+   {"uri_to_filename",APT_NATIVE_CALL(StrURItoFileName),METH_VARARGS,
     "uri_to_filename(uri: str) -> str\n\n"
     "Return a filename based on the given URI after replacing some\n"
     "parts not suited for filenames (e.g. '/')."},
-   {"base64_encode",StrBase64Encode,METH_VARARGS,
+   {"base64_encode",APT_NATIVE_CALL(StrBase64Encode),METH_VARARGS,
     "base64_encode(value: bytes) -> str\n\n"
     "Encode the given bytestring into Base64. The input may not\n"
     "contain a null byte character (use the base64 module for this)."},
-   {"string_to_bool",StrStringToBool,METH_VARARGS,
+   {"string_to_bool",APT_NATIVE_CALL(StrStringToBool),METH_VARARGS,
     "string_to_bool(string: str) -> int\n\n"
     "Return 1 if the string is a value such as 'yes', 'true', '1';\n"
     "0 if the string is a value such as 'no', 'false', '0'; -1 if\n"
     "the string is not recognized."},
-   {"time_rfc1123",StrTimeRFC1123,METH_VARARGS,
+   {"time_rfc1123",APT_NATIVE_CALL(StrTimeRFC1123),METH_VARARGS,
     "time_rfc1123(unixtime: int) -> str\n\n"
     "Format the given Unix time according to the requirements of\n"
     "RFC 1123."},
-   {"str_to_time",StrStrToTime,METH_VARARGS,
+   {"str_to_time",APT_NATIVE_CALL(StrStrToTime),METH_VARARGS,
     "str_to_time(rfc_time: str) -> int\n\n"
     "Convert the given RFC 1123 formatted string to a Unix timestamp."},
 
@@ -905,6 +905,14 @@ extern "C" void initapt_pkg()
    // Initialize the module
    #if PY_MAJOR_VERSION >= 3
    PyObject *Module = PyModule_Create(&moduledef);
+   if (Module == nullptr)
+      INIT_ERROR;
+   #ifdef Py_GIL_DISABLED
+   if (apt_python::export_native_lock(Module) < 0) {
+      Py_DECREF(Module);
+      INIT_ERROR;
+   }
+   #endif
    #else
    PyObject *Module = Py_InitModule3("apt_pkg",methods, apt_pkg_doc);
    #endif
@@ -1113,6 +1121,12 @@ extern "C" void initapt_pkg()
    PyModule_AddIntConstant(Module,"INSTSTATE_HOLD_REINSTREQ",pkgCache::State::HoldReInstReq);
 
    #if PY_MAJOR_VERSION >= 3
+   #ifdef Py_GIL_DISABLED
+   if (PyUnstable_Module_SetGIL(Module, Py_MOD_GIL_NOT_USED) < 0) {
+      Py_DECREF(Module);
+      INIT_ERROR;
+   }
+   #endif
    return Module;
    #endif
 }

@@ -223,7 +223,7 @@ static PyObject *order_list_is_missing(PyObject *self,PyObject *args)
 }
 
 
-#define METHOD(name) {#name, order_list_##name, METH_VARARGS,\
+#define METHOD(name) {#name, APT_NATIVE_CALL(order_list_##name), METH_VARARGS,\
                       order_list_##name##_doc}
 
 static PyMethodDef order_list_methods[] = {
@@ -262,10 +262,10 @@ Py_ssize_t order_list_seq_length(PyObject *self)
 
 static PySequenceMethods order_list_as_sequence =
 {
-   order_list_seq_length, // sq_length
+   APT_NATIVE_CALL(order_list_seq_length), // sq_length
    0,                     // sq_concat
    0,                     // sq_repeat
-   order_list_seq_item,   // sq_item
+   APT_NATIVE_CALL(order_list_seq_item),   // sq_item
    0,                     // sq_ass_item
    0,                     // sq_contains
    0,                     // sq_inplace_concat
@@ -280,7 +280,7 @@ PyTypeObject PyOrderList_Type = {
     sizeof(CppPyObject<pkgOrderList*>),  // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDeallocPtr<pkgOrderList*>,        // tp_dealloc
+    APT_NATIVE_CALL(CppDeallocPtr<pkgOrderList*>),        // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -313,5 +313,5 @@ PyTypeObject PyOrderList_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    order_list_new,                      // tp_new
+    APT_NATIVE_CALL(order_list_new),                      // tp_new
 };

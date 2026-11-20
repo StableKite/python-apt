@@ -27,7 +27,7 @@ static PyObject *IndexFileArchiveURI(PyObject *Self,PyObject *Args)
 
 static PyMethodDef IndexFileMethods[] =
 {
-   {"archive_uri",IndexFileArchiveURI,METH_VARARGS,
+   {"archive_uri",APT_NATIVE_CALL(IndexFileArchiveURI),METH_VARARGS,
     "archive_uri(path: str) -> str\n\n"
     "Return the URI to the given path in the archive."},
    {}
@@ -69,18 +69,18 @@ static PyObject *IndexFileRepr(PyObject *Self)
 #undef S
 
 static PyGetSetDef IndexFileGetSet[] = {
-    {"describe",IndexFileGetDescribe,0,
+    {"describe",APT_NATIVE_CALL(IndexFileGetDescribe),0,
      "A string describing the index file."},
-    {"exists",IndexFileGetExists,0,
+    {"exists",APT_NATIVE_CALL(IndexFileGetExists),0,
      "A boolean value determining whether the index file exists."},
-    {"has_packages",IndexFileGetHasPackages,0,
+    {"has_packages",APT_NATIVE_CALL(IndexFileGetHasPackages),0,
      "A boolean value determining whether the index file has packages."},
-    {"is_trusted",IndexFileGetIsTrusted,0,
+    {"is_trusted",APT_NATIVE_CALL(IndexFileGetIsTrusted),0,
      "A boolean value determining whether the file can be trusted; e.g.\n"
      "because it is from a source with a GPG signed Release file."},
-    {"label",IndexFileGetLabel,0,
+    {"label",APT_NATIVE_CALL(IndexFileGetLabel),0,
      "The label of the index file."},
-    {"size",IndexFileGetSize,0,
+    {"size",APT_NATIVE_CALL(IndexFileGetSize),0,
      "The size of the files, measured in bytes."},
     {}
 };
@@ -97,19 +97,19 @@ PyTypeObject PyIndexFile_Type =
    0,                                   // tp_itemsize
    // Methods
    // Not ..Ptr, because the pointer is managed somewhere else.
-   CppDeallocPtr<pkgIndexFile*>,   // tp_dealloc
+   APT_NATIVE_CALL(CppDeallocPtr<pkgIndexFile*>),   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
    0,                                   // tp_compare
-   IndexFileRepr,                // tp_repr
+   APT_NATIVE_CALL(IndexFileRepr),                // tp_repr
    0,                                   // tp_as_number
    0,                                   // tp_as_sequence
    0,                                   // tp_as_mapping
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   _PyAptObject_getattro,               // tp_getattro
+   APT_NATIVE_CALL(_PyAptObject_getattro),               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, // tp_flags

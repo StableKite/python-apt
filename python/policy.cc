@@ -175,19 +175,19 @@ static PyObject *policy_init_defaults(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef policy_methods[] = {
-    {"get_priority",(PyCFunction)policy_get_priority,METH_O,
+    {"get_priority",(PyCFunction)APT_NATIVE_CALL(policy_get_priority),METH_O,
      policy_get_priority_doc},
-    {"set_priority",policy_set_priority,METH_VARARGS,policy_set_priority_doc},
-    {"get_candidate_ver",(PyCFunction)policy_get_candidate_ver,METH_O,
+    {"set_priority",APT_NATIVE_CALL(policy_set_priority),METH_VARARGS,policy_set_priority_doc},
+    {"get_candidate_ver",(PyCFunction)APT_NATIVE_CALL(policy_get_candidate_ver),METH_O,
      policy_get_candidate_ver_doc},
-    {"read_pinfile",(PyCFunction)policy_read_pinfile,METH_O,
+    {"read_pinfile",(PyCFunction)APT_NATIVE_CALL(policy_read_pinfile),METH_O,
      policy_read_pinfile_doc},
 #if (APT_PKG_MAJOR > 4 || (APT_PKG_MAJOR >= 4 && APT_PKG_MINOR >= 8))
-    {"read_pindir",(PyCFunction)policy_read_pindir,METH_O,
+    {"read_pindir",(PyCFunction)APT_NATIVE_CALL(policy_read_pindir),METH_O,
      policy_read_pindir_doc},
 #endif
-    {"create_pin",policy_create_pin,METH_VARARGS,policy_create_pin_doc},
-    {"init_defaults",policy_init_defaults,METH_VARARGS,policy_init_defaults_doc},
+    {"create_pin",APT_NATIVE_CALL(policy_create_pin),METH_VARARGS,policy_create_pin_doc},
+    {"init_defaults",APT_NATIVE_CALL(policy_init_defaults),METH_VARARGS,policy_init_defaults_doc},
     {}
 };
 
@@ -204,7 +204,7 @@ PyTypeObject PyPolicy_Type = {
     sizeof(CppPyObject<pkgPolicy*>),// tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDeallocPtr<pkgPolicy*>,      // tp_dealloc
+    APT_NATIVE_CALL(CppDeallocPtr<pkgPolicy*>),      // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -239,5 +239,5 @@ PyTypeObject PyPolicy_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    policy_new,                    // tp_new
+    APT_NATIVE_CALL(policy_new),                    // tp_new
 };

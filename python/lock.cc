@@ -71,8 +71,8 @@ static PyObject *systemlock_new(PyTypeObject *type, PyObject *args,
 }
 
 static PyMethodDef systemlock_methods[] = {
-    {"__enter__",systemlock_enter,METH_VARARGS,"Lock the system."},
-    {"__exit__",systemlock_exit,METH_VARARGS,"Unlock the system."},
+    {"__enter__",APT_NATIVE_CALL(systemlock_enter),METH_VARARGS,"Lock the system."},
+    {"__exit__",APT_NATIVE_CALL(systemlock_exit),METH_VARARGS,"Unlock the system."},
     {NULL}
 };
 
@@ -131,7 +131,7 @@ PyTypeObject PySystemLock_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    systemlock_new,                      // tp_new
+    APT_NATIVE_CALL(systemlock_new),                      // tp_new
 };
 
 
@@ -204,8 +204,8 @@ static void filelock_dealloc(filelock_object *self)
 }
 
 static PyMethodDef filelock_methods[] = {
-    {"__enter__",(PyCFunction)filelock_enter,METH_VARARGS,"Lock the system."},
-    {"__exit__",(PyCFunction)filelock_exit,METH_VARARGS,"Unlock the system."},
+    {"__enter__",(PyCFunction)APT_NATIVE_CALL(filelock_enter),METH_VARARGS,"Lock the system."},
+    {"__exit__",(PyCFunction)APT_NATIVE_CALL(filelock_exit),METH_VARARGS,"Unlock the system."},
     {NULL}
 };
 
@@ -230,7 +230,7 @@ PyTypeObject PyFileLock_Type = {
     sizeof(filelock_object),            // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    destructor(filelock_dealloc),        // tp_dealloc
+    destructor(APT_NATIVE_CALL(filelock_dealloc)),        // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -264,5 +264,5 @@ PyTypeObject PyFileLock_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    filelock_new,                        // tp_new
+    APT_NATIVE_CALL(filelock_new),                        // tp_new
 };

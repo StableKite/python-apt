@@ -77,14 +77,14 @@ static PyObject *armember_repr(PyObject *self)
 }
 
 static PyGetSetDef armember_getset[] = {
-    {"gid",armember_get_gid,0,"The group id of the owner."},
-    {"mode",armember_get_mode,0,"The mode of the file."},
-    {"mtime",armember_get_mtime,0,"Last time of modification."},
-    {"name",armember_get_name,0,"The name of the file."},
-    {"size",armember_get_size,0,"The size of the files."},
-    {"start",armember_get_start,0,
+    {"gid",APT_NATIVE_CALL(armember_get_gid),0,"The group id of the owner."},
+    {"mode",APT_NATIVE_CALL(armember_get_mode),0,"The mode of the file."},
+    {"mtime",APT_NATIVE_CALL(armember_get_mtime),0,"Last time of modification."},
+    {"name",APT_NATIVE_CALL(armember_get_name),0,"The name of the file."},
+    {"size",APT_NATIVE_CALL(armember_get_size),0,"The size of the files."},
+    {"start",APT_NATIVE_CALL(armember_get_start),0,
      "The offset in the archive where the file starts."},
-    {"uid",armember_get_uid,0,"The user ID of the owner."},
+    {"uid",APT_NATIVE_CALL(armember_get_uid),0,"The user ID of the owner."},
     {NULL}
 };
 
@@ -98,12 +98,12 @@ PyTypeObject PyArMember_Type = {
     sizeof(CppPyObject<ARArchive::Member*>),  // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppDeallocPtr<ARArchive::Member*>, // tp_dealloc
+    APT_NATIVE_CALL(CppDeallocPtr<ARArchive::Member*>), // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
     0,                                   // tp_compare
-    armember_repr,                       // tp_repr
+    APT_NATIVE_CALL(armember_repr),                       // tp_repr
     0,                                   // tp_as_number
     0,                                   // tp_as_sequence
     0,                                   // tp_as_mapping
@@ -136,7 +136,7 @@ PyTypeObject PyFileFd_Type = {
     sizeof(CppPyObject<FileFd>),         // tp_basicsize
     0,                                        // tp_itemsize
     // Methods
-    CppDealloc<FileFd>,                  // tp_dealloc
+    APT_NATIVE_CALL(CppDealloc<FileFd>),                  // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -400,19 +400,19 @@ static PyObject *ararchive_iter(PyArArchiveObject *self) {
 }
 
 static PyMethodDef ararchive_methods[] = {
-    {"getmember",(PyCFunction)ararchive_getmember,METH_O,
+    {"getmember",(PyCFunction)APT_NATIVE_CALL(ararchive_getmember),METH_O,
      ararchive_getmember_doc},
-    {"gettar",(PyCFunction)ararchive_gettar,METH_VARARGS,
+    {"gettar",(PyCFunction)APT_NATIVE_CALL(ararchive_gettar),METH_VARARGS,
      ararchive_gettar_doc},
-    {"extractdata",(PyCFunction)ararchive_extractdata,METH_VARARGS,
+    {"extractdata",(PyCFunction)APT_NATIVE_CALL(ararchive_extractdata),METH_VARARGS,
      ararchive_extractdata_doc},
-    {"extract",(PyCFunction)ararchive_extract,METH_VARARGS,
+    {"extract",(PyCFunction)APT_NATIVE_CALL(ararchive_extract),METH_VARARGS,
      ararchive_extract_doc},
-    {"extractall",(PyCFunction)ararchive_extractall,METH_VARARGS,
+    {"extractall",(PyCFunction)APT_NATIVE_CALL(ararchive_extractall),METH_VARARGS,
      ararchive_extractall_doc},
-    {"getmembers",(PyCFunction)ararchive_getmembers,METH_NOARGS,
+    {"getmembers",(PyCFunction)APT_NATIVE_CALL(ararchive_getmembers),METH_NOARGS,
      ararchive_getmembers_doc},
-    {"getnames",(PyCFunction)ararchive_getnames,METH_NOARGS,
+    {"getnames",(PyCFunction)APT_NATIVE_CALL(ararchive_getnames),METH_NOARGS,
      ararchive_getnames_doc},
     {NULL}
 };
@@ -480,11 +480,11 @@ static int ararchive_contains(PyObject *self, PyObject *arg)
 }
 
 static PySequenceMethods ararchive_as_sequence = {
-    0,0,0,0,0,0,0,ararchive_contains,0,0
+    0,0,0,0,0,0,0,APT_NATIVE_CALL(ararchive_contains),0,0
 };
 
 static PyMappingMethods ararchive_as_mapping = {
-    0,(PyCFunction)ararchive_getmember,0
+    0,(PyCFunction)APT_NATIVE_CALL(ararchive_getmember),0
 };
 
 static const char *ararchive_doc =
@@ -502,7 +502,7 @@ PyTypeObject PyArArchive_Type = {
     sizeof(PyArArchiveObject),           // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    ararchive_dealloc,                   // tp_dealloc
+    APT_NATIVE_CALL(ararchive_dealloc),                   // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -524,7 +524,7 @@ PyTypeObject PyArArchive_Type = {
     ararchive_clear,                     // tp_clear
     0,                                   // tp_richcompare
     0,                                   // tp_weaklistoffset
-    (getiterfunc)ararchive_iter,         // tp_iter
+    (getiterfunc)APT_NATIVE_CALL(ararchive_iter),         // tp_iter
     0,                                   // tp_iternext
     ararchive_methods,                   // tp_methods
     0,                                   // tp_members
@@ -536,7 +536,7 @@ PyTypeObject PyArArchive_Type = {
     0,                                   // tp_dictoffset
     0,                                   // tp_init
     0,                                   // tp_alloc
-    ararchive_new                        // tp_new
+    APT_NATIVE_CALL(ararchive_new)                        // tp_new
 };
 
 /**
@@ -677,13 +677,13 @@ static void debfile_dealloc(PyObject *self) {
 }
 
 static PyGetSetDef debfile_getset[] = {
-    {"control",(getter)debfile_get_control,0,
+    {"control",(getter)APT_NATIVE_CALL(debfile_get_control),0,
      "The TarFile object associated with the control.tar.gz member."},
-    {"data",(getter)debfile_get_data,0,
+    {"data",(getter)APT_NATIVE_CALL(debfile_get_data),0,
      "The TarFile object associated with the data.tar.$compression member. "
      "All apt compression methods are supported. "
     },
-    {"debian_binary",(getter)debfile_get_debian_binary,0,
+    {"debian_binary",(getter)APT_NATIVE_CALL(debfile_get_debian_binary),0,
      "The package version, as contained in debian-binary."},
     {NULL}
 };
@@ -706,7 +706,7 @@ PyTypeObject PyDebFile_Type = {
     sizeof(PyDebFileObject),           // tp_basicsize
     0,                                 // tp_itemsize
     // Methods
-    debfile_dealloc,                   // tp_dealloc
+    APT_NATIVE_CALL(debfile_dealloc),                   // tp_dealloc
     0,                                 // tp_print
     0,                                 // tp_getattr
     0,                                 // tp_setattr
@@ -740,5 +740,5 @@ PyTypeObject PyDebFile_Type = {
     0,                                 // tp_dictoffset
     0,                                 // tp_init
     0,                                 // tp_alloc
-    debfile_new                        // tp_new
+    APT_NATIVE_CALL(debfile_new)                        // tp_new
 };
